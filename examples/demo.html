@@ -6,13 +6,17 @@
 </head>
 <body>
 
-
-<script type="text/javascript" src="../Guide.js"></script>
+<script type="text/javascript" src="../lib/require-2.1.4.js"></script><!-- data-main="../Guide.js" -->
+<!--script type="text/javascript" src="../Guide.js"></script-->
 <script type="text/javascript">
-  var guide = new Guide();
+  var guideLib = require(['../lib/jquery-1.9.1.min.js', '../Guide.js'], function($, guidejs) {
+      var guide = new guidejs.Guide();
+      //$('#myButton').onclick(guide.printItBig('Ohhhh yay!'));
+      guide.printItBig('Ohhhh yay!');
+  });
 </script>
 
-<a href="javascript:guide.printItBig('42')">Print it Big!</a>
+<button id="myButton">Print it Big!</button><!--  href="javascript:guide.printItBig('42')" -->
 
 </body>
 </html>
