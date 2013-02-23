@@ -2,9 +2,14 @@
 
 #Guide visitors through your website with Guide.js
 ==================================================
+
 In case the interface of your web application is not self-explanatory: Here comes Guide.js!
 
-Guide.js lets you augment your website in a way, it will explain itself to its user.
+With Guide.js you can augment your website, so that it displays
+
+0. help overlays (for a certain amount of time),
+0. guided tours (utilizing 'Guiders')
+0. ...
 
 ## Getting Started
 tbd
