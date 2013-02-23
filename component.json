@@ -1,0 +1,18 @@
+{
+    "name": "Guide.js",
+    "version": "0.0.1",
+    "main": [
+        "./dist/Guide.js"
+    ],
+    "author": {
+        "name": "Kai Hoelscher",
+        "web": "http://github.com/TheLeanMachine/"
+    },
+    "keywords": [
+        "UxD",
+        "IxD",
+        "help",
+        "interactive",
+        "guiders"
+    ]
+}
