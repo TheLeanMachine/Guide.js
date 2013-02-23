@@ -5,11 +5,14 @@
 
 In case the interface of your web application is not self-explanatory: Here comes Guide.js!
 
-With Guide.js you can augment your website, so that it displays
+With Guide.js you can augment your website with assisting features like...
 
-0. help overlays (for a certain amount of time),
-0. guided tours (utilizing 'Guiders')
-0. ...
+0. temporarily displaying help overlays or
+0. creating guided tours (utilizing 'Guiders').
+
+For a complete overview about Guidejs' functionality refer to the [defined use cases](https://github.com/TheLeanMachine/Guide.js/blob/master/USE_CASES.md).
+
+Guide.js is intended to be used with multiple JavaScript libraries, but in this early stage we only test with [jQuery](http://jquery.org/).
 
 ## Getting Started
 tbd
@@ -21,9 +24,8 @@ tbd
 tbd
 
 ## Contributing
-In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [grunt](http://gruntjs.com/).
 
-_Also, please don't edit files in the "dist" subdirectory as they are generated via grunt. You'll find source code in the "lib" subdirectory!_
+See [CONTRIBUTING.md](https://github.com/TheLeanMachine/Guide.js/blob/master/CONTRIBUTING.md).
 
 ## License
 Copyright (c) 2013 Kai Hoelscher aka TheLeanMachine
