@@ -41,7 +41,7 @@
     this.printItBig = printItBig;
   }
 
-  
+
   //
   // Helper functions
   //

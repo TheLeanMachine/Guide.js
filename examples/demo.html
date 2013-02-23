@@ -1,25 +1,34 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Guide visitors through your website with Guide.js</title>
-    <meta charset="UTF-8">
-</head>
+    <head>
+        <title>Guide visitors through your website with Guide.js</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href="demo.css" />
+    </head>
 <body>
+    <script type="text/javascript" src="../lib/jquery-1.9.1.min.js"></script><!-- TODO: Load jQuery via require.js, too. -->
+    <script type="text/javascript" src="../lib/require-2.1.4.js"></script>
+    <script type="text/javascript">
+        function initApp() {
+            var guideLib = require(['../Guide.js'], function(guidejs) {
+                var guide = new guidejs.Guide();
+                $('#myButton').on('click', guide.printItBig);
+            });
+        }
 
-<script type="text/javascript" src="../lib/jquery-1.9.1.min.js"></script><!-- TODO: Load jQuery via require.js, too. -->
-<script type="text/javascript" src="../lib/require-2.1.4.js"></script>
-<script type="text/javascript">
-    function initApp() {
-        var guideLib = require(['../Guide.js'], function(guidejs) {
-            var guide = new guidejs.Guide();
-            $('#myButton').on('click', guide.printItBig);
-        });
-    }
+        $(document).ready(initApp);
+    </script>
 
-    $(document).ready(initApp);
-</script>
+    <button id="myButton">Display help overlays</button>
 
-<button id="myButton">Print it Big!</button>
+    <div id="page">
+        <ul id="mainNav">
+            <li>Home</li>
+            <li>Products</li>
+            <li>About us</li>
+            <li>Imprint</li>
+        </ul>
+    </div>
 
-</body>
+    </body>
 </html>

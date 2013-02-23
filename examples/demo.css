@@ -1,0 +1,29 @@
+
+
+#page {
+    position: relative;
+    width: 500px;
+    min-height: 800px;
+    margin: 50px auto 0 auto;
+    border: 1px dashed maroon;
+}
+
+ul#mainNav {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 180px;
+    min-height: 250px;
+    border: 1px dashed maroon;
+    padding: 0;
+    margin: 0;
+}
+
+ul#mainNav li {
+    padding: 3px;
+    height: 25px;
+    display: block;
+    color: white;
+    background-color: grey;
+    margin-bottom: 15px;
+}
