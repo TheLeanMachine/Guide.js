@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/TheLeanMachine/Guide.js.png)](https://travis-ci.org/TheLeanMachine/Guide.js)
+[![Build Status](https://travis-ci.org/TheLeanMachine/Guide.js.png?branch=master)](https://travis-ci.org/TheLeanMachine/Guide.js)
 
 #Guide visitors through your website with Guide.js
 ==================================================
