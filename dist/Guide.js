@@ -11,11 +11,11 @@
   //
   // 'constants'
   //
+  var GLOBAL_CONTEXT = this; // 'window' in the browser, or 'global' on the server (see very bottom of this file)
+
   var GUIDE_TYPES = {
     SIMPLE_HELP_BOX: 'simple_help_box'
   };
-
-  var GLOBAL_CONTEXT = this; // 'window' in the browser, or 'global' on the server (see very bottom of this file)
 
   var COMMONJS_AVAILABLE = (typeof module !== 'undefined' && module.exports); // checks for node.js, too
 
@@ -47,13 +47,14 @@
   function createGuideByType(guideConfig) {
     validateGuideConfig(guideConfig);
 
-    return new HelpBoxGuide(guideConfig.activationHandler);
+    return new HelpBoxGuide(guideConfig);
   }
 
   function validateGuideConfig(guideConfig) {
     validateIsDefined(guideConfig, '"guideConfig" must not be empty.');
     validateIsObject(guideConfig, '"guideConfig" must be of type "Object".');
     validateHasKnownGuideType(guideConfig, '"guideConfig.type" is not defined or is an unknown type.');
+    // TODO validateRenderAdaptor(...) - instance check etc.
   }
 
   function EmptyGuide() {
@@ -64,15 +65,17 @@
 
   /**
    * A simple help box that gets displayed when an event is triggerd.
-   * @param activationHandler TODO doc
+   * @param guideConfig TODO doc
    * @constructor
    */
-  function HelpBoxGuide(activationHandler) {
+  function HelpBoxGuide(guideConfig) {
     /**
      * Triggers the Guide to do its work: Display a help box, start a tour with Guiders etc.
      */
-    function activate() {
-      activationHandler();
+    function activate() { // TODO rename to 'augment()' or sth. else?
+      var targetCssId = guideConfig.renderTarget;
+      var content = guideConfig.text;
+      guideConfig.renderAdapter.renderTo(targetCssId, content);
     }
 
     function isLoaded() {
@@ -81,6 +84,17 @@
 
     this.activate = activate;
     this.isLoaded = isLoaded;
+  }
+
+  // TODO add doc
+  function JQueryRenderAdapter(jQuery) {
+    function renderTo(renderTarget, content) {
+      jQuery(renderTarget).on('click', function() {
+        window.alert(content);
+      });
+    }
+
+    this.renderTo = renderTo;
   }
 
   /**
@@ -160,9 +174,12 @@
    * The API to be exported by this library.
    */
   function GuideJsApi() {
+    // variables
     this.version = '0.0.1';
     this.GUIDE_TYPES = GUIDE_TYPES;
+    this.JQueryRenderAdapter = JQueryRenderAdapter;
 
+    // methods
     this.loadGuide = newGuide;
     this.parseGuideFromJson = parseGuideFromJson;
   }

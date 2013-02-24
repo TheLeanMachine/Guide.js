@@ -6,27 +6,19 @@
         <link rel="stylesheet" type="text/css" href="demo.css" />
     </head>
 <body>
-<script type="text/javascript">
-    (function() {
-        console.log('Testing consoleAAAAAAAAAAA');
-    })();
-</script>
-
     <script type="text/javascript" src="../lib/jquery-1.9.1.min.js"></script><!-- TODO: Load jQuery via require.js, too. -->
     <script type="text/javascript" src="../lib/require-2.1.4.js"></script>
     <script type="text/javascript">
         function initApp() {
-console.log('>>>>>>>>>>> Testing console');
+console.log('>>> Init App...');
 
             require(['../Guide.js'], function(GuideJs) {
 
                 var guideConfig = {
                     type: GuideJs.GUIDE_TYPES.SIMPLE_HELP_BOX,
-                    activationHandler: function(){
-                        $('#myButton').on('click', function() {
-                            window.alert('See, this is the navigation, huh?!');
-                        });
-                    }
+                    text: 'This is rendered text, bro!',
+                    renderAdapter: new GuideJs.JQueryRenderAdapter($),
+                    renderTarget: '#myButton'
                 };
                 var guide = GuideJs.loadGuide(guideConfig);
                 guide.activate();
