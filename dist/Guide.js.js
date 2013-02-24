@@ -2,11 +2,10 @@
 * https://github.com/TheLeanMachine/Guide.js
 * Copyright (c) 2013 Kai Hoelscher; Licensed MIT */
 
-// TODO: [FEATURE] ...
+// TODO: [FEATURE] Guide parsing from JSON
 // TODO: [BUG]     ...
 // TODO: [DOC]     ...
-// TODO: [TEST]    Parsing a Guide from JSON.
-
+// TODO: [TEST]    ...
 (function (undefined) { // we always get 'undefined', since this code is directly invoked without arguments!
 
   //
@@ -28,14 +27,16 @@
 
 
   /**
-   * Creates a new Guide from a JSON definition.
-   * @param jsonGuide the JSON representing the Guide for the website to be augmented
+   * Creates a new Guide based on the passed configuration.
+   * @param guideConfig TODO doc
    */
-  function parseGuideFromJson(jsonGuide) {
-    return new HelpBoxGuide(jsonGuide.activationHandler);
+  function loadGuide(guideConfig) {
+    return createGuideByType(guideConfig);
   }
 
-
+  function createGuideByType(guideConfig) {
+    return new HelpBoxGuide(guideConfig.activationHandler);
+  }
 
   /**
    * A simple help box that gets displayed when an event is triggerd.
@@ -53,10 +54,21 @@
     this.activate = activate;
   }
 
+  /**
+   * Creates a new Guide from a JSON definition.
+   * @param jsonGuide the JSON representing the Guide for the website to be augmented
+   */
+  function parseGuideFromJson(jsonGuide) {
+    logError('Not yet implemented.');
+  }
 
   //
   // Helper functions
   //
+  function logError(msg) {
+    /*global console:false */
+    console.log('[ERROR] ' + msg);
+  }
 
   /**
    * The API to be exported by this library.
@@ -65,6 +77,7 @@
     this.version = '0.0.1';
     this.GUIDE_TYPES = GUIDE_TYPES;
 
+    this.loadGuide = loadGuide;
     this.parseGuideFromJson = parseGuideFromJson;
   }
 

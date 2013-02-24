@@ -70,6 +70,7 @@
   // Helper functions
   //
   function logError(msg) {
+    /*global console:false */
     console.log('[ERROR] ' + msg);
   }
 

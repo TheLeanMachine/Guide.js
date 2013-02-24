@@ -10,7 +10,7 @@
     <script type="text/javascript" src="../lib/require-2.1.4.js"></script>
     <script type="text/javascript">
         function initApp() {
-            require(['../Guide.js'], function(guideJs) {
+            require(['../Guide.js'], function(GuideJs) {
 
                 var guideConfig = {
                     type: guideJs.GUIDE_TYPES.SIMPLE_HELP_BOX,
@@ -21,7 +21,7 @@
                     }
                 };
 
-                var guide = guideJs.loadGuide(guideConfig);
+                var guide = GuideJs.loadGuide(guideConfig);
                 guide.activate();
             });
         }
