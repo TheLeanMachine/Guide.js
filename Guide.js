@@ -55,13 +55,13 @@
   }
 
   function validateGuideConfig(guideConfig) {
-    if (!guideConfig) {
-      throwError('"guideConfig" must not be empty.');
-    }
+    validateIsDefined(guideConfig, '"guideConfig" must not be empty.');
+    validateIsObject(guideConfig, '"guideConfig" must be of type "Object".');
+    validateHasKnownGuideType(guideConfig, '"guideConfig.type" is not defined or is an unknown type.');
   }
 
   function EmptyGuide() {
-    // TODO imlement Guide interface (activate(), ...)
+    // TODO implement Guide interface (activate(), ...)
 
     this.isLoaded = function() { return false; };
   }
@@ -84,6 +84,7 @@
     }
 
     this.activate = activate;
+    this.isLoaded = isLoaded;
   }
 
   /**
@@ -97,6 +98,57 @@
   //
   // Helper functions
   //
+  function objectHasPropertyWithValue(obj, val) {
+    var key;
+    for (key in obj) {
+      if (obj[key] === val) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function validateHasKnownGuideType(guideConfig, msg) {
+    if(!guideConfig.type || !objectHasPropertyWithValue(GUIDE_TYPES, guideConfig.type)) {
+      throwError(msg);
+    }
+  }
+
+  function validateIsDefined(variable, msg) {
+    if (!variable) {
+      throwError(msg);
+    }
+  }
+
+  function validateIsObject(obj, msg) {
+    if (!isObject(obj)) {
+      throwError(msg);
+    }
+  }
+
+  function isObject(obj) {
+    return obj === Object(obj);
+  }
+
+  function isArray(obj) {
+    return Array.isArray || Object.prototype.toString.call(obj) === '[object Array]';
+  }
+
+  function isFunction(fn) {
+    return Object.prototype.toString.call(fn) === '[object Function]';
+  }
+
+  // TODO add isString(str)
+/*
+
+ // Add some isType methods: isArguments, isFunction, isString, isNumber, isDate, isRegExp.
+ each(['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp'], function(name) {
+ _['is' + name] = function(obj) {
+ return toString.call(obj) == '[object ' + name + ']';
+ };
+ });
+*/
+
   function logError(msg) {
     /*global console:false */
     if (GLOBAL_CONTEXT.console) {
