@@ -1,5 +1,6 @@
 {
   "name": "Guide.js",
+  "nameMinified": "Guide.min.js",
   "description": "Guide visitors through your website with Guide.js",
   "version": "0.0.1",
   "homepage": "https://github.com/TheLeanMachine/Guide.js",

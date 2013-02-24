@@ -16,7 +16,7 @@ module.exports = function (grunt) {
                     '<banner:meta.banner>',
                     '<file_strip_banner:<%= pkg.name %>>'
                 ],
-                dest: 'dist/<%= pkg.name %>.js'
+                dest: 'dist/<%= pkg.name %>'
             }
         },
         min: {
@@ -25,7 +25,7 @@ module.exports = function (grunt) {
                     '<banner:meta.banner>',
                     '<config:concat.dist.dest>'
                 ],
-                dest: 'dist/<%= pkg.name %>.min.js'
+                dest: 'dist/<%= pkg.nameMinified %>'
             }
         },
         test: {

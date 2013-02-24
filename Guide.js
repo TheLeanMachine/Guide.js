@@ -36,9 +36,12 @@
    * Creates a new Guide based on the passed configuration.
    * @param guideConfig TODO doc
    */
-  function loadGuide(guideConfig) {
+  function newGuide(guideConfig) {
+    var guide;
+
     try {
-      return createGuideByType(guideConfig);
+      guide = createGuideByType(guideConfig);
+      return guide;
     } catch(err) {
       logError('Unable to load Guide: ' + err.message);
       return new EmptyGuide();
@@ -46,11 +49,15 @@
   }
 
   function createGuideByType(guideConfig) {
+    validateGuideConfig(guideConfig);
+
+    return new HelpBoxGuide(guideConfig.activationHandler);
+  }
+
+  function validateGuideConfig(guideConfig) {
     if (!guideConfig) {
       throwError('"guideConfig" must not be empty.');
     }
-
-    return new HelpBoxGuide(guideConfig.activationHandler);
   }
 
   function EmptyGuide() {
@@ -108,7 +115,7 @@
     this.version = '0.0.1';
     this.GUIDE_TYPES = GUIDE_TYPES;
 
-    this.loadGuide = loadGuide;
+    this.loadGuide = newGuide;
     this.parseGuideFromJson = parseGuideFromJson;
   }
 
@@ -131,4 +138,4 @@
       return new GuideJsApi();
     });
   }
-}).call(this); // explicitly passing 'this' as the global context
+}).call(this); // setting 'this' to the global context
