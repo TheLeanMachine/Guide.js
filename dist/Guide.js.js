@@ -25,17 +25,34 @@
   /*global define:false */
   var REQUIREJS_AVAILABLE = (typeof define === "function") && define.amd;
 
+  var DOC_URL = 'https://github.com/TheLeanMachine/Guide.js/blob/master/README.md';
+
 
   /**
    * Creates a new Guide based on the passed configuration.
    * @param guideConfig TODO doc
    */
   function loadGuide(guideConfig) {
-    return createGuideByType(guideConfig);
+    try {
+      return createGuideByType(guideConfig);
+    } catch(err) {
+      logError('Unable to load Guide: ' + err.message);
+      return new EmptyGuide();
+    }
   }
 
   function createGuideByType(guideConfig) {
+    if (!guideConfig) {
+      throwError('"guideConfig" must not be empty.');
+    }
+
     return new HelpBoxGuide(guideConfig.activationHandler);
+  }
+
+  function EmptyGuide() {
+    // TODO imlement Guide interface (activate(), ...)
+
+    this.isLoaded = function() { return false; };
   }
 
   /**
@@ -49,6 +66,10 @@
      */
     function activate() {
       activationHandler();
+    }
+
+    function isLoaded() {
+      return true;
     }
 
     this.activate = activate;
@@ -67,7 +88,13 @@
   //
   function logError(msg) {
     /*global console:false */
-    console.log('[ERROR] ' + msg);
+    if (GLOBAL_CONTEXT.console) {
+     GLOBAL_CONTEXT.console.log('[ERROR] ' + msg);
+    }
+  }
+
+  function throwError(msg) {
+    throw new Error(msg + ' - Check the API docs at ' + DOC_URL);
   }
 
   /**

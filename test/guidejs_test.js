@@ -22,13 +22,15 @@ var GuideJs = require('../Guide.js');
  */
 
 exports['GuideJs'] = {
-    setUp: function (done) {
-        done();
-    },
-    'no time passed': function (test) {
-      test.expect(1);
-       //guidejs.loadGuide(guideConfig);
-      test.ok(GuideJs !== undefined, '......');
-      test.done();
-    }
+  setUp:function (done) {
+    done();
+  },
+  'loadGuide(): detect invalid config: empty config':function (test) {
+    var failMsg = "Loading an empty Guide config should yield an Error.";
+
+    test.expect(2);
+    test.ok(GuideJs.loadGuide(undefined).isLoaded() === false, failMsg);
+    test.ok(GuideJs.loadGuide(null).isLoaded() === false, failMsg);
+    test.done();
+  }
 };
