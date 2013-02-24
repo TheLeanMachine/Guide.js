@@ -19,7 +19,9 @@ console.log('>>> Init App...');
                     text: 'This is rendered text, bro!',
                     renderAdapter: new GuideJs.JQueryRenderAdapter($),
                     renderTarget: '#mainNav',
-                    renderTrigger: '#myButton'
+                    renderTrigger: '#myButton',
+                    displayDuration: 3000,
+                    fadeOutMillis: 600
                 };
                 var guide = GuideJs.loadGuide(guideConfig);
                 guide.activate();

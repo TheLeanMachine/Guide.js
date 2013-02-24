@@ -10,8 +10,7 @@
 // TODO: [FEATURE] 02. New Guide type: GuideTour()
 // TODO: [FEATURE] 03. Guide parsing from JSON
 // TODO: [BUG]     ...
-// TODO: [DOC]     ...
-// TODO: [TEST]    ...
+// TODO: [TEST]    Module exporting(?), e.g. for require.js
 (function (undefined) { // we always get 'undefined', since this code is directly invoked without arguments!
 
   //
@@ -70,7 +69,7 @@
   }
 
   /**
-   * A simple help box that gets displayed when an event is triggerd.
+   * A simple help box that gets displayed for a certain amount of time.
    * @param guideConfig TODO doc
    * @constructor
    */
@@ -82,7 +81,9 @@
       var targetCssId = guideConfig.renderTarget;
       var buttonCssId = guideConfig.renderTrigger;
       var content = guideConfig.text;
-      guideConfig.renderAdapter.renderTo(targetCssId, content, buttonCssId);
+      var fadeOutMillis = guideConfig.fadeOutMillis;
+      var displayDuration = guideConfig.displayDuration;
+      guideConfig.renderAdapter.renderTo(targetCssId, content, buttonCssId, displayDuration, fadeOutMillis);
     }
 
     function isLoaded() {
@@ -95,15 +96,15 @@
 
   // TODO add doc
   function JQueryRenderAdapter($) {
-    function renderTo(renderTarget, content, renderTrigger) {
+    function renderTo(renderTarget, content, renderTrigger, displayDuration, fadeOutMillis) {
       var helpBox;
 
       $(renderTrigger).on('click', function() {
         $(renderTarget).prepend('<div class="helpBox"><h4>Immediate Help!</h4>' + content + '</div>');
         helpBox = renderTarget + " div.helpBox";
         setTimeout(function() {
-          $(helpBox).fadeOut(800);
-        }, 1000);
+          $(helpBox).fadeOut(fadeOutMillis);
+        }, displayDuration);
       });
     }
 
