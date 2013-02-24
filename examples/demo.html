@@ -12,7 +12,7 @@
         function initApp() {
             require(['../Guide.js'], function(guideJs) {
 
-                var jsonGuide = {
+                var guideConfig = {
                     type: guideJs.GUIDE_TYPES.SIMPLE_HELP_BOX,
                     activationHandler: function(){
                         $('#myButton').on('click', function() {
@@ -21,7 +21,7 @@
                     }
                 };
 
-                var guide = guideJs.parseGuideFromJson(jsonGuide);
+                var guide = guideJs.loadGuide(guideConfig);
                 guide.activate();
             });
         }
