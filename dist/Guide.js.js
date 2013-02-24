@@ -1,17 +1,21 @@
-/*! Guide.js - v0.0.1 - 2013-02-23
+/*! Guide.js - v0.0.1 - 2013-02-24
 * https://github.com/TheLeanMachine/Guide.js
 * Copyright (c) 2013 Kai Hoelscher; Licensed MIT */
 
 // TODO: [FEATURE] ...
 // TODO: [BUG]     ...
 // TODO: [DOC]     ...
-// TODO: [TEST]    ...
+// TODO: [TEST]    Parsing a Guide from JSON.
 
 (function (undefined) { // we always get 'undefined', since this code is directly invoked without arguments!
 
   //
   // 'constants'
   //
+  var GUIDE_TYPES = {
+    SIMPLE_HELP_BOX: 'simple_help_box'
+  };
+
   var GLOBAL_CONTEXT = this; // 'window' in the browser, or 'global' on the server (see very bottom of this file)
 
   var COMMONJS_AVAILABLE = (typeof module !== 'undefined' && module.exports); // checks for node.js, too
@@ -22,19 +26,31 @@
   /*global define:false */
   var REQUIREJS_AVAILABLE = (typeof define === "function") && define.amd;
 
+
   /**
-   *
-   * @param configOptions object containing configuration in the form 'key' -> 'value'
+   * Creates a new Guide from a JSON definition.
+   * @param jsonGuide the JSON representing the Guide for the website to be augmented
+   */
+  function parseGuideFromJson(jsonGuide) {
+    return new HelpBoxGuide(jsonGuide.activationHandler);
+  }
+
+
+
+  /**
+   * A simple help box that gets displayed when an event is triggerd.
+   * @param activationHandler TODO doc
    * @constructor
    */
-  function Guide(configOptions) {
-    var thisGuide = this;
-
-    function printItBig() {
-      return window.alert('Na eeeendlich....');
+  function HelpBoxGuide(activationHandler) {
+    /**
+     * Triggers the Guide to do its work: Display a help box, start a tour with Guiders etc.
+     */
+    function activate() {
+      activationHandler();
     }
 
-    this.printItBig = printItBig;
+    this.activate = activate;
   }
 
 
@@ -47,7 +63,9 @@
    */
   function GuideJsApi() {
     this.version = '0.0.1';
-    this.Guide = Guide;
+    this.GUIDE_TYPES = GUIDE_TYPES;
+
+    this.parseGuideFromJson = parseGuideFromJson;
   }
 
 

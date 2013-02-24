@@ -10,9 +10,19 @@
     <script type="text/javascript" src="../lib/require-2.1.4.js"></script>
     <script type="text/javascript">
         function initApp() {
-            var guideLib = require(['../Guide.js'], function(guidejs) {
-                var guide = new guidejs.Guide();
-                $('#myButton').on('click', guide.printItBig);
+            require(['../Guide.js'], function(guideJs) {
+
+                var jsonGuide = {
+                    type: guideJs.GUIDE_TYPES.SIMPLE_HELP_BOX,
+                    activationHandler: function(){
+                        $('#myButton').on('click', function() {
+                            window.alert('See, this is the navigation, huh?!');
+                        });
+                    }
+                };
+
+                var guide = guideJs.parseGuideFromJson(jsonGuide);
+                guide.activate();
             });
         }
 
