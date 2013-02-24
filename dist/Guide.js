@@ -2,7 +2,9 @@
 * https://github.com/TheLeanMachine/Guide.js
 * Copyright (c) 2013 Kai Hoelscher; Licensed MIT */
 
-// TODO: [FEATURE] Guide parsing from JSON
+// TODO: [FEATURE] 01. Render parameters? (etc. fade out time)
+// TODO: [FEATURE] 02. New Guide type: GuideTour()
+// TODO: [FEATURE] 03. Guide parsing from JSON
 // TODO: [BUG]     ...
 // TODO: [DOC]     ...
 // TODO: [TEST]    ...
@@ -74,8 +76,9 @@
      */
     function activate() { // TODO rename to 'augment()' or sth. else?
       var targetCssId = guideConfig.renderTarget;
+      var buttonCssId = guideConfig.renderTrigger;
       var content = guideConfig.text;
-      guideConfig.renderAdapter.renderTo(targetCssId, content);
+      guideConfig.renderAdapter.renderTo(targetCssId, content, buttonCssId);
     }
 
     function isLoaded() {
@@ -87,10 +90,16 @@
   }
 
   // TODO add doc
-  function JQueryRenderAdapter(jQuery) {
-    function renderTo(renderTarget, content) {
-      jQuery(renderTarget).on('click', function() {
-        window.alert(content);
+  function JQueryRenderAdapter($) {
+    function renderTo(renderTarget, content, renderTrigger) {
+      var helpBox;
+
+      $(renderTrigger).on('click', function() {
+        $(renderTarget).prepend('<div class="helpBox"><h4>Immediate Help!</h4>' + content + '</div>');
+        helpBox = renderTarget + " div.helpBox";
+        setTimeout(function() {
+          $(helpBox).fadeOut(800);
+        }, 1000);
       });
     }
 
@@ -111,7 +120,7 @@
   function objectHasPropertyWithValue(obj, val) {
     var key;
     for (key in obj) {
-      if (obj[key] === val) {
+      if (obj.hasOwnProperty(key) && obj[key] === val) {
         return true;
       }
     }

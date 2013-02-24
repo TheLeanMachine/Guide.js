@@ -1,5 +1,3 @@
-
-
 #page {
     position: relative;
     width: 500px;
@@ -26,4 +24,19 @@ ul#mainNav li {
     color: white;
     background-color: grey;
     margin-bottom: 15px;
+}
+
+.helpBox {
+    position: absolute;
+    left: -200px;
+    width: 150px;
+    padding: 15px;
+    background-color: #ddd;
+    border: 2px dashed #c00;
+}
+
+.helpBox h4 {
+    margin: 0;
+    padding: 0 0 5px 0;
+    border-bottom: 1px dashed #c00;
 }

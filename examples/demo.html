@@ -18,7 +18,8 @@ console.log('>>> Init App...');
                     type: GuideJs.GUIDE_TYPES.SIMPLE_HELP_BOX,
                     text: 'This is rendered text, bro!',
                     renderAdapter: new GuideJs.JQueryRenderAdapter($),
-                    renderTarget: '#myButton'
+                    renderTarget: '#mainNav',
+                    renderTrigger: '#myButton'
                 };
                 var guide = GuideJs.loadGuide(guideConfig);
                 guide.activate();
