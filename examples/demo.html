@@ -9,22 +9,27 @@
     <script type="text/javascript" src="../lib/jquery-1.9.1.min.js"></script><!-- TODO: Load jQuery via require.js, too. -->
     <script type="text/javascript" src="../lib/require-2.1.4.js"></script>
     <script type="text/javascript">
+
+        function createSimpleHelpBoxGuide(GuideJs) {
+            var guideConfig = {
+                type:GuideJs.GUIDE_TYPES.SIMPLE_HELP_BOX,
+                text:'This is rendered text, bro!',
+                renderAdapter:new GuideJs.JQueryRenderAdapter($),
+                renderTarget:'#mainNav',
+                renderTrigger:'#myButton',
+                displayDuration:3000,
+                fadeOutMillis:400
+            };
+            var guide = GuideJs.loadGuide(guideConfig);
+            guide.activate();
+        }
+
         function initApp() {
-console.log('>>> Init App...');
-
             require(['../Guide.js'], function(GuideJs) {
+                createSimpleHelpBoxGuide(GuideJs);
 
-                var guideConfig = {
-                    type: GuideJs.GUIDE_TYPES.SIMPLE_HELP_BOX,
-                    text: 'This is rendered text, bro!',
-                    renderAdapter: new GuideJs.JQueryRenderAdapter($),
-                    renderTarget: '#mainNav',
-                    renderTrigger: '#myButton',
-                    displayDuration: 3000,
-                    fadeOutMillis: 600
-                };
-                var guide = GuideJs.loadGuide(guideConfig);
-                guide.activate();
+                $('#deactivateAll').on('click', GuideJs.deactivateAll);
+                $('#activateAll').on('click', GuideJs.activateAll);
             });
         }
 
@@ -32,6 +37,8 @@ console.log('>>> Init App...');
     </script>
 
     <button id="myButton">Display help overlays</button>
+    <button id="deactivateAll">Deactivate all Guides</button>
+    <button id="activateAll">Activate all Guides</button>
 
     <div id="page">
         <ul id="mainNav">
