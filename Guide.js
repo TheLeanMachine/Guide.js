@@ -137,22 +137,18 @@
    * Deactivates all Guides (ATM this means to hide them).
    */
   function deactivateAll() {
-    var i;
-
-    for (i=0; i<GUIDES.length; ++i) {
-      GUIDES[i].deactivate();
-    }
+    forEachIn(GUIDES, function(guide) {
+      guide.deactivate();
+    });
   }
 
   /**
    * Activates all Guides (ATM this means to display them, again).
    */
   function activateAll() {
-    var i;
-
-    for (i=0; i<GUIDES.length; ++i) {
-      GUIDES[i].activate();
-    }
+    forEachIn(GUIDES, function(guide) {
+      guide.activate();
+    });
   }
 
   /**
@@ -167,6 +163,14 @@
   //
   // Helper functions
   //
+  function forEachIn(array, fn) {
+    var i;
+
+    for (i=0; i<array.length; ++i) {
+      fn(array[i]);
+    }
+  }
+
   function objectHasPropertyWithValue(obj, val) {
     var key;
     for (key in obj) {
