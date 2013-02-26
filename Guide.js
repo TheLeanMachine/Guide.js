@@ -6,12 +6,12 @@
  * Licensed under the MIT license.
  */
 
-// TODO: [FEATURE] stop/stopAll() and resume/resumeAll()... or toggleActive()?
 // TODO: [FEATURE] expose conrete 'classes' instead of generic 'newGuide()' method
 // TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
-// TODO: [FEATURE] New Guide type: GuideTour()
+// TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
 // TODO: [FEATURE] Guide parsing from JSON
 // TODO: [BUG]     ...
+// TODO: [TEST]    activate() and deactivate() AND
 // TODO: [TEST]    Module exporting(?), e.g. for require.js
 (function (undefined) { // we always get 'undefined', since this code is directly invoked without arguments!
 

@@ -1,19 +1,22 @@
-/*! Guide.js - v0.0.1 - 2013-02-24
+/*! Guide.js - v0.0.1 - 2013-02-26
 * https://github.com/TheLeanMachine/Guide.js
 * Copyright (c) 2013 Kai Hoelscher; Licensed MIT */
 
-// TODO: [FEATURE] 01. Render parameters? (etc. fade out time)
-// TODO: [FEATURE] 02. New Guide type: GuideTour()
-// TODO: [FEATURE] 03. Guide parsing from JSON
+// TODO: [FEATURE] stop/stopAll() and resume/resumeAll()... or toggleActive()?
+// TODO: [FEATURE] expose conrete 'classes' instead of generic 'newGuide()' method
+// TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
+// TODO: [FEATURE] New Guide type: GuideTour()
+// TODO: [FEATURE] Guide parsing from JSON
 // TODO: [BUG]     ...
-// TODO: [DOC]     ...
-// TODO: [TEST]    ...
+// TODO: [TEST]    Module exporting(?), e.g. for require.js
 (function (undefined) { // we always get 'undefined', since this code is directly invoked without arguments!
 
   //
   // 'constants'
   //
   var GLOBAL_CONTEXT = this; // 'window' in the browser, or 'global' on the server (see very bottom of this file)
+
+  var GUIDES = [];
 
   var GUIDE_TYPES = {
     SIMPLE_HELP_BOX: 'simple_help_box'
@@ -39,6 +42,7 @@
 
     try {
       guide = createGuideByType(guideConfig);
+      GUIDES.push(guide);
       return guide;
     } catch(err) {
       logError('Unable to load Guide: ' + err.message);
@@ -66,19 +70,30 @@
   }
 
   /**
-   * A simple help box that gets displayed when an event is triggerd.
+   * A simple help box that gets displayed for a certain amount of time.
    * @param guideConfig TODO doc
    * @constructor
    */
   function HelpBoxGuide(guideConfig) {
+    var renderAdapter = guideConfig.renderAdapter;
+    var targetCssId = guideConfig.renderTarget;
+
     /**
      * Triggers the Guide to do its work: Display a help box, start a tour with Guiders etc.
      */
     function activate() { // TODO rename to 'augment()' or sth. else?
-      var targetCssId = guideConfig.renderTarget;
+
       var buttonCssId = guideConfig.renderTrigger;
       var content = guideConfig.text;
-      guideConfig.renderAdapter.renderTo(targetCssId, content, buttonCssId);
+      var fadeOutMillis = guideConfig.fadeOutMillis;
+      var displayDuration = guideConfig.displayDuration;
+
+      renderAdapter.renderTo(targetCssId, content, buttonCssId, displayDuration, fadeOutMillis);
+    }
+
+    // TODO add doc
+    function deactivate() {
+      renderAdapter.hide(targetCssId); // naive implementation
     }
 
     function isLoaded() {
@@ -86,24 +101,54 @@
     }
 
     this.activate = activate;
+    this.deactivate = deactivate;
     this.isLoaded = isLoaded;
   }
 
   // TODO add doc
   function JQueryRenderAdapter($) {
-    function renderTo(renderTarget, content, renderTrigger) {
+    var helpBoxCssId = 'myTestHelpBox';
+
+    // TODO add doc
+    function renderTo(renderTarget, content, displayDuration, fadeOutMillis) {
+
       var helpBox;
 
-      $(renderTrigger).on('click', function() {
-        $(renderTarget).prepend('<div class="helpBox"><h4>Immediate Help!</h4>' + content + '</div>');
-        helpBox = renderTarget + " div.helpBox";
-        setTimeout(function() {
-          $(helpBox).fadeOut(800);
-        }, 1000);
-      });
+      $(renderTarget).prepend('<div id="'+ helpBoxCssId +'"  class="helpBox"><h4>Immediate Help!</h4>' + content + '</div>');
+      helpBox = renderTarget + " div.helpBox";
+      setTimeout(function() {
+        $(helpBox).fadeOut(fadeOutMillis);
+      }, displayDuration);
+    }
+
+    function hide() {
+      $('#' + helpBoxCssId).hide();
     }
 
     this.renderTo = renderTo;
+    this.hide = hide;
+  }
+
+  /**
+   * Deactivates all Guides (ATM this means to hide them).
+   */
+  function deactivateAll() {
+    var i;
+
+    for (i=0; i<GUIDES.length; ++i) {
+      GUIDES[i].deactivate();
+    }
+  }
+
+  /**
+   * Activates all Guides (ATM this means to display them, again).
+   */
+  function activateAll() {
+    var i;
+
+    for (i=0; i<GUIDES.length; ++i) {
+      GUIDES[i].activate();
+    }
   }
 
   /**
@@ -113,6 +158,7 @@
   function parseGuideFromJson(jsonGuide) {
     logError('Not yet implemented.');
   }
+
 
   //
   // Helper functions
@@ -190,6 +236,8 @@
 
     // methods
     this.loadGuide = newGuide;
+    this.activateAll = activateAll;
+    this.deactivateAll = deactivateAll;
     this.parseGuideFromJson = parseGuideFromJson;
   }
 
