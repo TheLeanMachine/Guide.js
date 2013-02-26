@@ -2,16 +2,17 @@
 * https://github.com/TheLeanMachine/Guide.js
 * Copyright (c) 2013 Kai Hoelscher; Licensed MIT */
 
-// TODO: [BUG]     ...
-// TODO: [TEST]    activate() and deactivate() AND
-// TODO: [TEST]    Module exporting(?), e.g. for require.js
+// TODO: [BUG] ...
+// TODO: [TEST] activate() and deactivate() AND
+// TODO: [TEST] Module exporting(?), e.g. for require.js
+// TODO: [FEATURE] Provide HTML template for Guide
 // TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
 // TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
+// TODO: [FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
 // TODO: [FEATURE] Guide parsing from JSON
 // TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
 // TODO: [REFACTOR] Rename: validate*() -> throwIfNot*() / check*()
-
-
+// TODO: [VALIDATION] Args of createHelpBoxGuide() -> set to reasonable defaults otherwise
 (function (undefined) { // we always get 'undefined' here, since this code is directly invoked without arguments!
 
   //
@@ -70,6 +71,27 @@
     // TODO implement Guide interface (activate(), ...)
 
     this.isLoaded = function() { return false; };
+  }
+
+  /**
+   * Factory method for creating new {@link HelpBoxGuide} instances.
+   *
+   * @param guideConfig TODO doc
+   */
+  function createHelpBoxGuide(guideConfig) {
+    var defaultText = 'This is the default text of a HelpBoxGuide';
+    var defaultDisplayDuration = 1000;
+    var defaultFadeOutMillis = 150;
+
+    var validConfig = {
+      renderAdapter: guideConfig.renderAdapter,
+      renderTarget: guideConfig.renderTarget,
+      text: (guideConfig.text) ? guideConfig.text : defaultText,
+      displayDuration: (guideConfig.displayDuration) ? guideConfig.displayDuration : defaultDisplayDuration,
+      fadeOutMillis: (guideConfig.fadeOutMillis) ? guideConfig.displayDuration : defaultFadeOutMillis
+    };
+
+    return new HelpBoxGuide(validConfig);
   }
 
   /**
@@ -241,6 +263,7 @@
     this.JQueryRenderAdapter = JQueryRenderAdapter;
 
     // methods
+    this.createHelpBoxGuide = createHelpBoxGuide;
     this.loadGuide = newGuide;
     this.activateAll = activateAll;
     this.deactivateAll = deactivateAll;
@@ -258,7 +281,7 @@
   if (ENDER_AVAILABLE) {
     // add `guide` as a global object via a string identifier,
     // for Closure Compiler "advanced" mode
-    GLOBAL_CONTEXT['guide'] = new GuideJsApi();
+    GLOBAL_CONTEXT['GuideJs'] = new GuideJsApi();
   }
   if (REQUIREJS_AVAILABLE) {
     /*global define:false */

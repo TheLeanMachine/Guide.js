@@ -22,22 +22,18 @@
             return GuideJs.loadGuide(guideConfig);
         }
 
-        function createImprintHelpBoxGuide(GuideJs) {
+        function createImprintHelpBoxGuideDefault(GuideJs) {
             var guideConfig = {
-                type:GuideJs.GUIDE_TYPES.SIMPLE_HELP_BOX,
-                text:'This is a fine bullet point!!',
                 renderAdapter:new GuideJs.JQueryRenderAdapter($),
-                renderTarget:'#liImprint',
-                displayDuration:3000,
-                fadeOutMillis:400
+                renderTarget:'#liImprint'
             };
-            return GuideJs.loadGuide(guideConfig);
+            return GuideJs.createHelpBoxGuide(guideConfig);
         }
 
         function initApp() {
             require(['../Guide.js'], function(GuideJs) {
                 var naviHelpBoxGuide =  createNaviHelpBoxGuide(GuideJs)
-                var imprintHelpBoxGuide =  createImprintHelpBoxGuide(GuideJs)
+                var imprintHelpBoxGuide =  createImprintHelpBoxGuideDefault(GuideJs)
 
                 $('#displayHelpText').on('click', naviHelpBoxGuide.activate);
                 $('#displayHelpText').on('click', imprintHelpBoxGuide.activate);
