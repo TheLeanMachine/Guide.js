@@ -58,15 +58,15 @@
   }
 
   function createGuideByType(guideConfig) {
-    validateGuideConfig(guideConfig);
+    throwIfInvalidConfig(guideConfig);
 
     return new HelpBoxGuide(guideConfig);
   }
 
-  function validateGuideConfig(guideConfig) {
-    validateIsDefined(guideConfig, '"guideConfig" must not be empty.');
-    validateIsObject(guideConfig, '"guideConfig" must be of type "Object".');
-    validateHasKnownGuideType(guideConfig, '"guideConfig.type" is not defined or is an unknown type.');
+  function throwIfInvalidConfig(guideConfig) {
+    throwIfNotDefined(guideConfig, '"guideConfig" must not be empty.');
+    throwIfNoObject(guideConfig, '"guideConfig" must be of type "Object".');
+    throwIfInvalidGuideType(guideConfig, '"guideConfig.type" is not defined or is an unknown type.');
     // TODO validateRenderAdaptor(...) - instance check etc.
   }
 
@@ -183,19 +183,19 @@
     return false;
   }
 
-  function validateHasKnownGuideType(guideConfig, msg) {
+  function throwIfInvalidGuideType(guideConfig, msg) {
     if(!guideConfig.type || !objectHasPropertyWithValue(GUIDE_TYPES, guideConfig.type)) {
       throwError(msg);
     }
   }
 
-  function validateIsDefined(variable, msg) {
+  function throwIfNotDefined(variable, msg) {
     if (!variable) {
       throwError(msg);
     }
   }
 
-  function validateIsObject(obj, msg) {
+  function throwIfNoObject(obj, msg) {
     if (!isObject(obj)) {
       throwError(msg);
     }

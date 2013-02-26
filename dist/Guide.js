@@ -2,14 +2,17 @@
 * https://github.com/TheLeanMachine/Guide.js
 * Copyright (c) 2013 Kai Hoelscher; Licensed MIT */
 
-// TODO: [FEATURE] stop/stopAll() and resume/resumeAll()... or toggleActive()?
-// TODO: [FEATURE] expose conrete 'classes' instead of generic 'newGuide()' method
-// TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
-// TODO: [FEATURE] New Guide type: GuideTour()
-// TODO: [FEATURE] Guide parsing from JSON
 // TODO: [BUG]     ...
+// TODO: [TEST]    activate() and deactivate() AND
 // TODO: [TEST]    Module exporting(?), e.g. for require.js
-(function (undefined) { // we always get 'undefined', since this code is directly invoked without arguments!
+// TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
+// TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
+// TODO: [FEATURE] Guide parsing from JSON
+// TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
+// TODO: [REFACTOR] Rename: validate*() -> throwIfNot*() / check*()
+
+
+(function (undefined) { // we always get 'undefined' here, since this code is directly invoked without arguments!
 
   //
   // 'constants'
@@ -51,15 +54,15 @@
   }
 
   function createGuideByType(guideConfig) {
-    validateGuideConfig(guideConfig);
+    throwIfInvalidConfig(guideConfig);
 
     return new HelpBoxGuide(guideConfig);
   }
 
-  function validateGuideConfig(guideConfig) {
-    validateIsDefined(guideConfig, '"guideConfig" must not be empty.');
-    validateIsObject(guideConfig, '"guideConfig" must be of type "Object".');
-    validateHasKnownGuideType(guideConfig, '"guideConfig.type" is not defined or is an unknown type.');
+  function throwIfInvalidConfig(guideConfig) {
+    throwIfNotDefined(guideConfig, '"guideConfig" must not be empty.');
+    throwIfNoObject(guideConfig, '"guideConfig" must be of type "Object".');
+    throwIfInvalidGuideType(guideConfig, '"guideConfig.type" is not defined or is an unknown type.');
     // TODO validateRenderAdaptor(...) - instance check etc.
   }
 
@@ -111,10 +114,9 @@
 
     // TODO add doc
     function renderTo(renderTarget, content, displayDuration, fadeOutMillis) {
-
       var helpBox;
 
-      $(renderTarget).prepend('<div id="'+ helpBoxCssId +'"  class="helpBox"><h4>Immediate Help!</h4>' + content + '</div>');
+      $(renderTarget).prepend('<div id="'+ helpBoxCssId +'" class="helpBox"><h4>Immediate Help!</h4>' + content + '</div>');
       helpBox = renderTarget + " div.helpBox";
       setTimeout(function() {
         $(helpBox).fadeOut(fadeOutMillis);
@@ -133,22 +135,18 @@
    * Deactivates all Guides (ATM this means to hide them).
    */
   function deactivateAll() {
-    var i;
-
-    for (i=0; i<GUIDES.length; ++i) {
-      GUIDES[i].deactivate();
-    }
+    forEachIn(GUIDES, function(guide) {
+      guide.deactivate();
+    });
   }
 
   /**
    * Activates all Guides (ATM this means to display them, again).
    */
   function activateAll() {
-    var i;
-
-    for (i=0; i<GUIDES.length; ++i) {
-      GUIDES[i].activate();
-    }
+    forEachIn(GUIDES, function(guide) {
+      guide.activate();
+    });
   }
 
   /**
@@ -163,6 +161,14 @@
   //
   // Helper functions
   //
+  function forEachIn(array, fn) {
+    var i;
+
+    for (i=0; i<array.length; ++i) {
+      fn(array[i]);
+    }
+  }
+
   function objectHasPropertyWithValue(obj, val) {
     var key;
     for (key in obj) {
@@ -173,19 +179,19 @@
     return false;
   }
 
-  function validateHasKnownGuideType(guideConfig, msg) {
+  function throwIfInvalidGuideType(guideConfig, msg) {
     if(!guideConfig.type || !objectHasPropertyWithValue(GUIDE_TYPES, guideConfig.type)) {
       throwError(msg);
     }
   }
 
-  function validateIsDefined(variable, msg) {
+  function throwIfNotDefined(variable, msg) {
     if (!variable) {
       throwError(msg);
     }
   }
 
-  function validateIsObject(obj, msg) {
+  function throwIfNoObject(obj, msg) {
     if (!isObject(obj)) {
       throwError(msg);
     }
