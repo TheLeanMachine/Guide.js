@@ -2,7 +2,7 @@
 * https://github.com/TheLeanMachine/Guide.js
 * Copyright (c) 2013 Kai Hoelscher; Licensed MIT */
 
-// TODO: [BUG] ...
+// TODO: [BUG] Rendering: All HelpBoxGuide have the sam CSS-ID! - Refactor whole render concept?
 // TODO: [TEST] activate() and deactivate() AND
 // TODO: [TEST] Module exporting(?), e.g. for require.js
 // TODO: [FEATURE] Provide HTML template for Guide
@@ -21,6 +21,8 @@
   var GLOBAL_CONTEXT = this; // 'window' in the browser, or 'global' on the server (see very bottom of this file)
 
   var GUIDES = [];
+
+  var lastAddedGuideId = 0;
 
   var GUIDE_TYPES = {
     SIMPLE_HELP_BOX: 'simple_help_box'
@@ -44,6 +46,7 @@
   function newGuide(guideConfig) {
     var guide;
 
+    ++lastAddedGuideId;
     try {
       guide = createGuideByType(guideConfig);
       GUIDES.push(guide);
@@ -91,7 +94,10 @@
       fadeOutMillis: (guideConfig.fadeOutMillis) ? guideConfig.displayDuration : defaultFadeOutMillis
     };
 
-    return new HelpBoxGuide(validConfig);
+
+    var helpBoxGuide = new HelpBoxGuide(validConfig);
+    GUIDES.push(helpBoxGuide);
+    return helpBoxGuide;
   }
 
   /**
@@ -100,6 +106,7 @@
    * @constructor
    */
   function HelpBoxGuide(guideConfig) {
+    var guideId = lastAddedGuideId++;
     var renderAdapter = guideConfig.renderAdapter;
     var targetCssId = guideConfig.renderTarget;
 
@@ -108,17 +115,16 @@
      */
     function activate() { // TODO rename to 'augment()' or sth. else?
 
-      var buttonCssId = guideConfig.renderTrigger;
       var content = guideConfig.text;
       var fadeOutMillis = guideConfig.fadeOutMillis;
       var displayDuration = guideConfig.displayDuration;
 
-      renderAdapter.renderTo(targetCssId, content, buttonCssId, displayDuration, fadeOutMillis);
+      renderAdapter.renderHtmlTo(targetCssId, content, displayDuration, fadeOutMillis, guideId);
     }
 
     // TODO add doc
     function deactivate() {
-      renderAdapter.hide(targetCssId); // naive implementation
+      renderAdapter.hide(guideId); // naive implementation
     }
 
     function isLoaded() {
@@ -132,24 +138,28 @@
 
   // TODO add doc
   function JQueryRenderAdapter($) {
-    var helpBoxCssId = 'myTestHelpBox';
+    var helpBoxCssIdPrefix = 'guideJsHelpBox-';
 
     // TODO add doc
-    function renderTo(renderTarget, content, displayDuration, fadeOutMillis) {
+    function renderHtmlTo(renderTarget, content, displayDuration, fadeOutMillis, guideId) {
       var helpBox;
 
-      $(renderTarget).prepend('<div id="'+ helpBoxCssId +'" class="helpBox"><h4>Immediate Help!</h4>' + content + '</div>');
+      $(renderTarget).prepend('<div id="'+ getCssIdForGuide(guideId) +'" class="helpBox"><h4>Immediate Help!</h4>' + content + '</div>');
       helpBox = renderTarget + " div.helpBox";
       setTimeout(function() {
         $(helpBox).fadeOut(fadeOutMillis);
       }, displayDuration);
     }
 
-    function hide() {
-      $('#' + helpBoxCssId).hide();
+    function hide(guideId) {
+      $('#' + getCssIdForGuide(guideId)).hide();
     }
 
-    this.renderTo = renderTo;
+    function getCssIdForGuide(guideId) {
+      return helpBoxCssIdPrefix + guideId;
+    }
+
+    this.renderHtmlTo = renderHtmlTo;
     this.hide = hide;
   }
 

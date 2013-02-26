@@ -16,7 +16,7 @@
                 text:'This is rendered text, bro!',
                 renderAdapter:new GuideJs.JQueryRenderAdapter($),
                 renderTarget:'#mainNav',
-                displayDuration:3000,
+                displayDuration:2000,
                 fadeOutMillis:400
             };
             return GuideJs.loadGuide(guideConfig);
@@ -32,8 +32,8 @@
 
         function initApp() {
             require(['../Guide.js'], function(GuideJs) {
-                var naviHelpBoxGuide =  createNaviHelpBoxGuide(GuideJs)
-                var imprintHelpBoxGuide =  createImprintHelpBoxGuideDefault(GuideJs)
+                var naviHelpBoxGuide =  createNaviHelpBoxGuide(GuideJs);
+                var imprintHelpBoxGuide =  createImprintHelpBoxGuideDefault(GuideJs);
 
                 $('#displayHelpText').on('click', naviHelpBoxGuide.activate);
                 $('#displayHelpText').on('click', imprintHelpBoxGuide.activate);
