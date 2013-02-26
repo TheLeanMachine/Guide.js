@@ -16,18 +16,16 @@
                 text:'This is rendered text, bro!',
                 renderAdapter:new GuideJs.JQueryRenderAdapter($),
                 renderTarget:'#mainNav',
-                renderTrigger:'#myButton',
                 displayDuration:3000,
                 fadeOutMillis:400
             };
-            var guide = GuideJs.loadGuide(guideConfig);
-            guide.activate();
+            return GuideJs.loadGuide(guideConfig);
         }
 
         function initApp() {
             require(['../Guide.js'], function(GuideJs) {
-                createSimpleHelpBoxGuide(GuideJs);
-
+                var helpBoxGuide = createSimpleHelpBoxGuide(GuideJs);
+                $('#displayHelpText').on('click', helpBoxGuide.activate);
                 $('#deactivateAll').on('click', GuideJs.deactivateAll);
                 $('#activateAll').on('click', GuideJs.activateAll);
             });
@@ -36,7 +34,7 @@
         $(document).ready(initApp);
     </script>
 
-    <button id="myButton">Display help overlays</button>
+    <button id="displayHelpText">Display help overlays</button>
     <button id="deactivateAll">Deactivate all Guides</button>
     <button id="activateAll">Activate all Guides</button>
 

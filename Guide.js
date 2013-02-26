@@ -114,17 +114,15 @@
     var helpBoxCssId = 'myTestHelpBox';
 
     // TODO add doc
-    function renderTo(renderTarget, content, renderTrigger, displayDuration, fadeOutMillis) {
+    function renderTo(renderTarget, content, displayDuration, fadeOutMillis) {
 
       var helpBox;
 
-      $(renderTrigger).on('click', function() {
-        $(renderTarget).prepend('<div id="'+ helpBoxCssId +'"  class="helpBox"><h4>Immediate Help!</h4>' + content + '</div>');
-        helpBox = renderTarget + " div.helpBox";
-        setTimeout(function() {
-          $(helpBox).fadeOut(fadeOutMillis);
-        }, displayDuration);
-      });
+      $(renderTarget).prepend('<div id="'+ helpBoxCssId +'"  class="helpBox"><h4>Immediate Help!</h4>' + content + '</div>');
+      helpBox = renderTarget + " div.helpBox";
+      setTimeout(function() {
+        $(helpBox).fadeOut(fadeOutMillis);
+      }, displayDuration);
     }
 
     function hide() {
