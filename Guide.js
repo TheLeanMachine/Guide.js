@@ -6,14 +6,17 @@
  * Licensed under the MIT license.
  */
 
-// TODO: [FEATURE] expose conrete 'classes' instead of generic 'newGuide()' method
-// TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
-// TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
-// TODO: [FEATURE] Guide parsing from JSON
 // TODO: [BUG]     ...
 // TODO: [TEST]    activate() and deactivate() AND
 // TODO: [TEST]    Module exporting(?), e.g. for require.js
-(function (undefined) { // we always get 'undefined', since this code is directly invoked without arguments!
+// TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
+// TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
+// TODO: [FEATURE] Guide parsing from JSON
+// TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
+// TODO: [REFACTOR] Rename: validate*() -> throwIfNot*() / check*()
+
+
+(function (undefined) { // we always get 'undefined' here, since this code is directly invoked without arguments!
 
   //
   // 'constants'
@@ -115,10 +118,9 @@
 
     // TODO add doc
     function renderTo(renderTarget, content, displayDuration, fadeOutMillis) {
-
       var helpBox;
 
-      $(renderTarget).prepend('<div id="'+ helpBoxCssId +'"  class="helpBox"><h4>Immediate Help!</h4>' + content + '</div>');
+      $(renderTarget).prepend('<div id="'+ helpBoxCssId +'" class="helpBox"><h4>Immediate Help!</h4>' + content + '</div>');
       helpBox = renderTarget + " div.helpBox";
       setTimeout(function() {
         $(helpBox).fadeOut(fadeOutMillis);
