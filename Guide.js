@@ -9,13 +9,12 @@
 // TODO: [BUG]     ...
 // TODO: [TEST]    activate() and deactivate() AND
 // TODO: [TEST]    Module exporting(?), e.g. for require.js
+// TODO: [FEATURE] Provide HTML template for Guide
 // TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
 // TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
 // TODO: [FEATURE] Guide parsing from JSON
 // TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
 // TODO: [REFACTOR] Rename: validate*() -> throwIfNot*() / check*()
-
-
 (function (undefined) { // we always get 'undefined' here, since this code is directly invoked without arguments!
 
   //
@@ -262,7 +261,7 @@
   if (ENDER_AVAILABLE) {
     // add `guide` as a global object via a string identifier,
     // for Closure Compiler "advanced" mode
-    GLOBAL_CONTEXT['guide'] = new GuideJsApi();
+    GLOBAL_CONTEXT['GuideJs'] = new GuideJsApi();
   }
   if (REQUIREJS_AVAILABLE) {
     /*global define:false */
