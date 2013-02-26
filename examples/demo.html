@@ -10,7 +10,7 @@
     <script type="text/javascript" src="../lib/require-2.1.4.js"></script>
     <script type="text/javascript">
 
-        function createSimpleHelpBoxGuide(GuideJs) {
+        function createNaviHelpBoxGuide(GuideJs) {
             var guideConfig = {
                 type:GuideJs.GUIDE_TYPES.SIMPLE_HELP_BOX,
                 text:'This is rendered text, bro!',
@@ -22,10 +22,26 @@
             return GuideJs.loadGuide(guideConfig);
         }
 
+        function createImprintHelpBoxGuide(GuideJs) {
+            var guideConfig = {
+                type:GuideJs.GUIDE_TYPES.SIMPLE_HELP_BOX,
+                text:'This is a fine bullet point!!',
+                renderAdapter:new GuideJs.JQueryRenderAdapter($),
+                renderTarget:'#liImprint',
+                displayDuration:3000,
+                fadeOutMillis:400
+            };
+            return GuideJs.loadGuide(guideConfig);
+        }
+
         function initApp() {
             require(['../Guide.js'], function(GuideJs) {
-                var helpBoxGuide = createSimpleHelpBoxGuide(GuideJs);
-                $('#displayHelpText').on('click', helpBoxGuide.activate);
+                var naviHelpBoxGuide =  createNaviHelpBoxGuide(GuideJs)
+                var imprintHelpBoxGuide =  createImprintHelpBoxGuide(GuideJs)
+
+                $('#displayHelpText').on('click', naviHelpBoxGuide.activate);
+                $('#displayHelpText').on('click', imprintHelpBoxGuide.activate);
+
                 $('#deactivateAll').on('click', GuideJs.deactivateAll);
                 $('#activateAll').on('click', GuideJs.activateAll);
             });
@@ -43,7 +59,7 @@
             <li>Home</li>
             <li>Products</li>
             <li>About us</li>
-            <li>Imprint</li>
+            <li id="liImprint">Imprint</li>
         </ul>
     </div>
 
