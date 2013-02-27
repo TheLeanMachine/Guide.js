@@ -143,24 +143,32 @@
   // TODO add doc
   function JQueryRenderAdapter($) {
     var helpBoxCssIdPrefix = 'guideJsHelpBox-';
+    var closeLinkCssIdPrefix = 'guideJsHelpBoxCloseLink-';
 
     // TODO add doc
     function renderHtmlTo(renderTarget, content, displayDuration, fadeOutMillis, guideId) {
       var helpBox;
 
-      $(renderTarget).prepend('<div id="'+ getCssIdForGuide(guideId) +'" class="helpBox"><h4>Immediate Help!</h4>' + content + '</div>');
-      helpBox = renderTarget + " div.helpBox";
+      $(renderTarget).prepend('<div id="'+ cssIdHelpBox(guideId) +'" class="helpBox">' + content + '<br><a id="'+ cssIdCloseLink(guideId) +'" href="">close</a></div>');
       setTimeout(function() {
-        $(helpBox).fadeOut(fadeOutMillis);
+        $('#' + cssIdHelpBox(guideId)).fadeOut(fadeOutMillis);
       }, displayDuration);
+
+      $('#' + cssIdCloseLink(guideId)).on('click', function(){
+        hide(guideId);
+      });
     }
 
     function hide(guideId) {
-      $('#' + getCssIdForGuide(guideId)).hide();
+      $('#' + cssIdHelpBox(guideId)).hide();
     }
 
-    function getCssIdForGuide(guideId) {
+    function cssIdHelpBox(guideId) {
       return helpBoxCssIdPrefix + guideId;
+    }
+
+    function cssIdCloseLink(guideId) {
+      return closeLinkCssIdPrefix + guideId;
     }
 
     this.renderHtmlTo = renderHtmlTo;
