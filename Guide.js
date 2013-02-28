@@ -17,7 +17,7 @@
 // TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
 // TODO: [REFACTOR] Rename: validate*() -> throwIfNot*() / check*()
 // TODO: [VALIDATION] Args of createHelpBoxGuide() -> set to reasonable defaults otherwise
-(function (undefined) { // we always get 'undefined' here, since this code is directly invoked without arguments!
+(function (undefined) { // we always get 'undefined' here, since this code is directly invoked without arguments
 
   //
   // 'constants'
