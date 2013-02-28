@@ -6,9 +6,10 @@
  * Licensed under the MIT license.
  */
 
-// TODO: [BUG] Rendering: All HelpBoxGuide have the sam CSS-ID! - Refactor whole render concept?
+// TODO: [BUG] When trying to close a HelpBoxGuide, ALL HelpBoxes are closed!
 // TODO: [TEST] activate() and deactivate() AND
-// TODO: [TEST] Module exporting(?), e.g. for require.js
+// TODO: [TEST] Module exporting, e.g. for require.js (???)
+// TODO: [FEATURE] Provide debug mode
 // TODO: [FEATURE] Provide HTML template for Guide
 // TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
 // TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
@@ -17,7 +18,6 @@
 // TODO: [REFACTOR] make use of renderAdapter()
 // TODO: [REFACTOR] remove loadGuide()
 // TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
-// TODO: [REFACTOR] Rename: validate*() -> throwIfNot*() / check*()
 // TODO: [VALIDATION] Args of createHelpBoxGuide() -> set to reasonable defaults otherwise
 (function (undefined) { // we always get 'undefined' here, since this code is directly invoked without arguments
 
