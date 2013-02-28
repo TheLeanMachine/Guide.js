@@ -14,6 +14,8 @@
 // TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
 // TODO: [FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
 // TODO: [FEATURE] Guide parsing from JSON
+// TODO: [REFACTOR] make use of renderAdapter()
+// TODO: [REFACTOR] remove loadGuide()
 // TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
 // TODO: [REFACTOR] Rename: validate*() -> throwIfNot*() / check*()
 // TODO: [VALIDATION] Args of createHelpBoxGuide() -> set to reasonable defaults otherwise
@@ -27,6 +29,8 @@
   var GUIDES = [];
 
   var lastAddedGuideId = 0;
+
+  var RENDER_ADAPTER = null;
 
   var GUIDE_TYPES = {
     SIMPLE_HELP_BOX: 'simple_help_box'
@@ -42,6 +46,22 @@
 
   var DOC_URL = 'https://github.com/TheLeanMachine/Guide.js/blob/master/README.md';
 
+
+  // TODO doc
+  function renderAdapter() {
+    return RENDER_ADAPTER ? RENDER_ADAPTER : defaultRenderAdapter();
+  }
+
+  function defaultRenderAdapter() {
+    if (jQueryAvailable()) {
+      RENDER_ADAPTER = new JQueryRenderAdapter(GLOBAL_CONTEXT.jQuery);
+    }
+    logError('Cannot render any Guides: No appropriate lib found in global context.');
+  }
+
+  function jQueryAvailable() {
+    return GLOBAL_CONTEXT.jQuery != null;
+  }
 
   /**
    * Creates a new Guide based on the passed configuration.
