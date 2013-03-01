@@ -15,6 +15,7 @@
 // TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
 // TODO: [FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
 // TODO: [FEATURE] Guide parsing from JSON
+// TODO: [REFACTOR] Do we alwy
 // TODO: [REFACTOR] Rename HelpBoxGuide to HelpBpx (???)
 // TODO: [REFACTOR] make use of renderAdapter()
 // TODO: [REFACTOR] remove loadGuide()
@@ -34,6 +35,8 @@
   var GUIDE_TYPES = {
     SIMPLE_HELP_BOX: 'simple_help_box'
   };
+
+  var RENDERER = null; // TODO add doc
 
   var COMMONJS_AVAILABLE = (typeof module !== 'undefined' && module.exports); // checks for node.js, too
 
@@ -106,7 +109,7 @@
     var defaultText = 'This is the default text of a HelpBoxGuide';
     var defaultDisplayDuration = 1000;
     var defaultFadeOutMillis = 150;
-    var renderAdapter = (clientConfig.renderAdapter && isObject(renderAdapter)) ? clientConfig.renderAdapter : defaultRenderAdapter(); // TODO more renderAdapter checks?
+    var renderAdapter = (clientConfig.renderAdapter && isObject(renderAdapter)) ? clientConfig.renderAdapter : renderer(); // TODO more renderAdapter checks?
     var validConfig = {
       renderAdapter:renderAdapter,
       renderTarget:clientConfig.renderTarget,
@@ -115,6 +118,10 @@
       fadeOutMillis:(clientConfig.fadeOutMillis) ? clientConfig.displayDuration : defaultFadeOutMillis
     };
     return new HelpBoxGuide(validConfig);
+  }
+
+  function renderer() {
+    return RENDERER ? RENDERER : defaultRenderAdapter();
   }
 
   // TODO doc
