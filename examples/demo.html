@@ -9,22 +9,19 @@
     <script type="text/javascript" src="../lib/jquery-1.9.1.min.js"></script><!-- TODO: Load jQuery via require.js, too. -->
     <script type="text/javascript" src="../lib/require-2.1.4.js"></script>
     <script type="text/javascript">
-
-        function createNaviHelpBoxGuide(GuideJs) {
-            var guideConfig = {
-                type:GuideJs.GUIDE_TYPES.SIMPLE_HELP_BOX,
-                text:'No one stands longer than me!',
-                renderAdapter:new GuideJs.JQueryRenderAdapter($),
-                renderTarget:'#mainNav',
-                displayDuration:5000,
-                fadeOutMillis:400
-            };
-            return GuideJs.loadGuide(guideConfig);
-        }
-
         function createImprintHelpBoxGuideDefault(GuideJs) {
             var guideConfig = {
                 renderTarget:'#liImprint'
+            };
+            return GuideJs.createHelpBoxGuide(guideConfig);
+        }
+
+        function createNaviHelpBoxGuide(GuideJs) {
+            var guideConfig = {
+                renderTarget:'#mainNav',
+                text:'No one stands longer than me!',
+                displayDuration:5000,
+                fadeOutMillis:400
             };
             return GuideJs.createHelpBoxGuide(guideConfig);
         }

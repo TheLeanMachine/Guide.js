@@ -13,7 +13,6 @@
 // TODO: [FEATURE] Guide parsing from JSON
 // TODO: [REFACTOR] Rename HelpBoxGuide to HelpBpx (???)
 // TODO: [REFACTOR] make use of renderAdapter()
-// TODO: [REFACTOR] remove loadGuide()
 // TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
 // TODO: [VALIDATION] Args of createHelpBoxGuide() -> set to reasonable defaults otherwise
 (function (undefined) { // we always get 'undefined' here, since this code is directly invoked without arguments
@@ -31,6 +30,8 @@
     SIMPLE_HELP_BOX: 'simple_help_box'
   };
 
+  var RENDERER = null; // TODO add doc
+
   var COMMONJS_AVAILABLE = (typeof module !== 'undefined' && module.exports); // checks for node.js, too
 
   /*global ender:false */
@@ -43,43 +44,6 @@
 
   function jQueryAvailable() {
     return GLOBAL_CONTEXT.jQuery != null;
-  }
-
-  /**
-   * Creates a new Guide based on the passed configuration.
-   * @param guideConfig TODO doc
-   */
-  function newGuide(guideConfig) {
-    var guide;
-
-    ++lastAddedGuideId;
-    try {
-      guide = createGuideByType(guideConfig);
-      GUIDES.push(guide);
-      return guide;
-    } catch(err) {
-      logError('Unable to load Guide: ' + err.message);
-      return new EmptyGuide();
-    }
-  }
-
-  function createGuideByType(guideConfig) {
-    throwIfInvalidConfig(guideConfig);
-
-    return new HelpBoxGuide(guideConfig);
-  }
-
-  function throwIfInvalidConfig(guideConfig) {
-    throwIfNotDefined(guideConfig, '"guideConfig" must not be empty.');
-    throwIfNoObject(guideConfig, '"guideConfig" must be of type "Object".');
-    throwIfInvalidGuideType(guideConfig, '"guideConfig.type" is not defined or is an unknown type.');
-    // TODO validateRenderAdaptor(...) - instance check etc.
-  }
-
-  function EmptyGuide() {
-    // TODO implement Guide interface (activate(), ...)
-
-    this.isLoaded = function() { return false; };
   }
 
   /**
@@ -102,9 +66,7 @@
     var defaultText = 'This is the default text of a HelpBoxGuide';
     var defaultDisplayDuration = 1000;
     var defaultFadeOutMillis = 150;
-    var renderAdapter = (clientConfig.renderAdapter && isObject(renderAdapter)) ? clientConfig.renderAdapter : defaultRenderAdapter(); // TODO more renderAdapter checks?
     var validConfig = {
-      renderAdapter:renderAdapter,
       renderTarget:clientConfig.renderTarget,
       text:(clientConfig.text) ? clientConfig.text : defaultText,
       displayDuration:(clientConfig.displayDuration) ? clientConfig.displayDuration : defaultDisplayDuration,
@@ -113,8 +75,16 @@
     return new HelpBoxGuide(validConfig);
   }
 
+  // TODO add doc (rename fn?)
+  function renderer() {
+    if (RENDERER == null) {
+      RENDERER = createDefaultRenderer();
+    }
+    return RENDERER;
+  }
+
   // TODO doc
-  function defaultRenderAdapter() {
+  function createDefaultRenderer() {
     if (jQueryAvailable()) {
       return new JQueryRenderAdapter(GLOBAL_CONTEXT.jQuery);
     }
@@ -132,7 +102,6 @@
    */
   function HelpBoxGuide(guideConfig) {
     var guideId = lastAddedGuideId++;
-    var renderAdapter = guideConfig.renderAdapter;
     var targetCssId = guideConfig.renderTarget;
 
     /**
@@ -144,12 +113,12 @@
       var fadeOutMillis = guideConfig.fadeOutMillis;
       var displayDuration = guideConfig.displayDuration;
 
-      renderAdapter.renderHtmlTo(targetCssId, content, displayDuration, fadeOutMillis, guideId);
+      renderer().renderHtmlTo(targetCssId, content, displayDuration, fadeOutMillis, guideId);
     }
 
     // TODO add doc
     function deactivate() {
-      renderAdapter.hide(guideId); // naive implementation
+      renderer().hide(guideId); // naive implementation
     }
 
     function isLoaded() {
@@ -161,7 +130,7 @@
     this.isLoaded = isLoaded;
   }
 
-  // TODO add doc
+  // TODO add doc (rename to wrapJQuery() )
   function JQueryRenderAdapter($) {
     var helpBoxCssIdPrefix = 'guideJsHelpBox-';
     var closeLinkCssIdPrefix = 'guideJsHelpBoxCloseLink-';
@@ -244,24 +213,6 @@
     return false;
   }
 
-  function throwIfInvalidGuideType(guideConfig, msg) {
-    if(!guideConfig.type || !objectHasPropertyWithValue(GUIDE_TYPES, guideConfig.type)) {
-      throwError(msg);
-    }
-  }
-
-  function throwIfNotDefined(variable, msg) {
-    if (!variable) {
-      throwError(msg);
-    }
-  }
-
-  function throwIfNoObject(obj, msg) {
-    if (!isObject(obj)) {
-      throwError(msg);
-    }
-  }
-
   function isObject(obj) {
     return obj === Object(obj);
   }
@@ -307,7 +258,6 @@
 
     // methods
     this.createHelpBoxGuide = createHelpBoxGuide;
-    this.loadGuide = newGuide;
     this.activateAll = activateAll;
     this.deactivateAll = deactivateAll;
     this.parseGuideFromJson = parseGuideFromJson;
