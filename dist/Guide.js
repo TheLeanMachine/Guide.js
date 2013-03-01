@@ -1,19 +1,20 @@
-/*! Guide.js - v0.0.1 - 2013-02-28
+/*! Guide.js - v0.0.1 - 2013-03-01
 * https://github.com/TheLeanMachine/Guide.js
 * Copyright (c) 2013 Kai Hoelscher; Licensed MIT */
 
-// TODO: [BUG] Rendering: All HelpBoxGuide have the sam CSS-ID! - Refactor whole render concept?
+// TODO: [BUG] When trying to close a HelpBoxGuide, ALL HelpBoxes are closed!
 // TODO: [TEST] activate() and deactivate() AND
-// TODO: [TEST] Module exporting(?), e.g. for require.js
+// TODO: [TEST] Module exporting, e.g. for require.js (???)
+// >>> TODO: [FEATURE] Provide debug mode
 // TODO: [FEATURE] Provide HTML template for Guide
 // TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
 // TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
 // TODO: [FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
 // TODO: [FEATURE] Guide parsing from JSON
+// TODO: [REFACTOR] Rename HelpBoxGuide to HelpBpx (???)
 // TODO: [REFACTOR] make use of renderAdapter()
 // TODO: [REFACTOR] remove loadGuide()
 // TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
-// TODO: [REFACTOR] Rename: validate*() -> throwIfNot*() / check*()
 // TODO: [VALIDATION] Args of createHelpBoxGuide() -> set to reasonable defaults otherwise
 (function (undefined) { // we always get 'undefined' here, since this code is directly invoked without arguments
 
@@ -25,8 +26,6 @@
   var GUIDES = [];
 
   var lastAddedGuideId = 0;
-
-  var RENDER_ADAPTER = null;
 
   var GUIDE_TYPES = {
     SIMPLE_HELP_BOX: 'simple_help_box'
@@ -41,19 +40,6 @@
   var REQUIREJS_AVAILABLE = (typeof define === "function") && define.amd;
 
   var DOC_URL = 'https://github.com/TheLeanMachine/Guide.js/blob/master/README.md';
-
-
-  // TODO doc
-  function renderAdapter() {
-    return RENDER_ADAPTER ? RENDER_ADAPTER : defaultRenderAdapter();
-  }
-
-  function defaultRenderAdapter() {
-    if (jQueryAvailable()) {
-      RENDER_ADAPTER = new JQueryRenderAdapter(GLOBAL_CONTEXT.jQuery);
-    }
-    logError('Cannot render any Guides: No appropriate lib found in global context.');
-  }
 
   function jQueryAvailable() {
     return GLOBAL_CONTEXT.jQuery != null;
@@ -102,22 +88,41 @@
    * @param guideConfig TODO doc
    */
   function createHelpBoxGuide(guideConfig) {
+    var helpBoxGuide;
+    try {
+      helpBoxGuide = helpBoxFrom(guideConfig);
+      registerGuide(helpBoxGuide);
+    } catch (err) {
+      logError(err.message);
+    }
+    return helpBoxGuide;
+  }
+
+  function helpBoxFrom(clientConfig) {
     var defaultText = 'This is the default text of a HelpBoxGuide';
     var defaultDisplayDuration = 1000;
     var defaultFadeOutMillis = 150;
-
+    var renderAdapter = (clientConfig.renderAdapter && isObject(renderAdapter)) ? clientConfig.renderAdapter : defaultRenderAdapter(); // TODO more renderAdapter checks?
     var validConfig = {
-      renderAdapter: guideConfig.renderAdapter,
-      renderTarget: guideConfig.renderTarget,
-      text: (guideConfig.text) ? guideConfig.text : defaultText,
-      displayDuration: (guideConfig.displayDuration) ? guideConfig.displayDuration : defaultDisplayDuration,
-      fadeOutMillis: (guideConfig.fadeOutMillis) ? guideConfig.displayDuration : defaultFadeOutMillis
+      renderAdapter:renderAdapter,
+      renderTarget:clientConfig.renderTarget,
+      text:(clientConfig.text) ? clientConfig.text : defaultText,
+      displayDuration:(clientConfig.displayDuration) ? clientConfig.displayDuration : defaultDisplayDuration,
+      fadeOutMillis:(clientConfig.fadeOutMillis) ? clientConfig.displayDuration : defaultFadeOutMillis
     };
+    return new HelpBoxGuide(validConfig);
+  }
 
+  // TODO doc
+  function defaultRenderAdapter() {
+    if (jQueryAvailable()) {
+      return new JQueryRenderAdapter(GLOBAL_CONTEXT.jQuery);
+    }
+    throwError('Cannot render any Guides: No appropriate lib found in global context.'); // TODO Still an Error? is public?
+  }
 
-    var helpBoxGuide = new HelpBoxGuide(validConfig);
+  function registerGuide(helpBoxGuide) {
     GUIDES.push(helpBoxGuide);
-    return helpBoxGuide;
   }
 
   /**
