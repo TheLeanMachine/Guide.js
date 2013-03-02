@@ -116,13 +116,11 @@
 
       var anchor = debugEnabled() ? DEBUG_URL_HASH : 'top';
       var html = '<div id="'+ helpBoxCssId +'" class="helpBox">' + content + '<br><a id="'+ closeLinkCssId +'" href="#'+ anchor +'">close</a></div>';
-      renderer().renderHtmlTo(html, targetCssId, helpBoxCssId, displayDuration, fadeOutMillis);
+      renderer().renderHtmlTo(targetCssId, html, helpBoxCssId, displayDuration, fadeOutMillis);
 
-      // TODO Refactor: make API jQuery independent
-      $('#' + closeLinkCssId).on('click', function(){
+      renderer().attachEventTo('click', closeLinkCssId, function() {
         deactivate();
       });
-      logDebug('Register close handler on "#' + closeLinkCssId + '"');
     }
 
     // TODO add doc
@@ -141,10 +139,8 @@
 
   // TODO add doc (rename to wrapJQuery() )
   function JQueryRenderAdapter($) {
-
-
     // TODO add doc
-    function renderHtmlTo(html, cssIdRenderTarget, cssIdGuideContainer, displayDuration, fadeOutMillis) {
+    function renderHtmlTo(cssIdRenderTarget, html, cssIdGuideContainer, displayDuration, fadeOutMillis) {
       var helpBox;
 
       // TODO a) client should add plain CSS-ID b) write addHtmlAsChildOf() method
@@ -157,11 +153,16 @@
 
     function hide(cssIdGuideContainer) {
       $('#' + cssIdGuideContainer).hide();
-logDebug("...in" + cssIdGuideContainer);
+    }
+
+    // TODO add doc
+    function attachEventTo(eventName, cssIdGuideContainer, fn) {
+      $('#' + cssIdGuideContainer).on(eventName, fn);
     }
 
     this.renderHtmlTo = renderHtmlTo;
     this.hide = hide;
+    this.attachEventTo = attachEventTo;
   }
 
   /**
