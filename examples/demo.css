@@ -40,3 +40,30 @@ ul#mainNav li {
     padding: 0 0 5px 0;
     border-bottom: 1px dashed #c00;
 }
+
+a.buttonLink {
+    text-decoration: none;
+    color: #000;
+    text-align: center;
+    background-color: #ddd;
+    border-top: 2px solid #ddd;
+    border-left: 2px solid #ddd;
+    border-right: 2px solid #000;
+    border-bottom: 2px solid #000;
+}
+
+a.buttonLink:hover {
+    border-top: 2px solid #000;
+    border-left: 2px solid #000;
+    border-right: 2px solid #ddd;
+    border-bottom: 2px solid #ddd;
+}
+
+a#debugModeSwitch {
+    display: block;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 120px;
+    padding: 2px;
+}

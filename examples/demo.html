@@ -42,9 +42,15 @@
         $(document).ready(initApp);
     </script>
 
-    <button id="displayHelpText">Display help overlays</button>
-    <button id="deactivateAll">Deactivate all Guides</button>
-    <button id="activateAll">Activate all Guides</button>
+    <a href="#debugGuideJs" id="debugModeSwitch" class="buttonLink">Enable debugging</a>
+
+    <div name="debugGuideJs"><!-- Jump to page top, when debuggin is enabled. -->
+
+        <button id="displayHelpText">Display help overlays</button>
+        <button id="deactivateAll">Deactivate all Guides</button>
+        <button id="activateAll">Activate all Guides</button>
+    </div>
+
 
     <div id="page">
         <ul id="mainNav">
