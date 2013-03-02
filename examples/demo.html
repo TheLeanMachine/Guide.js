@@ -11,14 +11,14 @@
     <script type="text/javascript">
         function createImprintHelpBoxGuideDefault(GuideJs) {
             var guideConfig = {
-                renderTarget:'#liImprint'
+                renderTarget:'liImprint'
             };
             return GuideJs.createHelpBoxGuide(guideConfig);
         }
 
         function createNaviHelpBoxGuide(GuideJs) {
             var guideConfig = {
-                renderTarget:'#mainNav',
+                renderTarget:'mainNav',
                 text:'No one stands longer than me!',
                 displayDuration:5000,
                 fadeOutMillis:400
@@ -32,7 +32,7 @@
                 var imprintHelpBoxGuide =  createImprintHelpBoxGuideDefault(GuideJs);
 
                 $('#displayHelpText').on('click', naviHelpBoxGuide.activate);
-                $('#displayHelpText').on('click', imprintHelpBoxGuide.activate);
+                $('#displayHelpImprint').on('click', imprintHelpBoxGuide.activate);
 
                 $('#deactivateAll').on('click', GuideJs.deactivateAll);
                 $('#activateAll').on('click', GuideJs.activateAll);
@@ -46,7 +46,8 @@
 
     <div name="debugGuideJs"><!-- Jump to page top, when debuggin is enabled. -->
 
-        <button id="displayHelpText">Display help overlays</button>
+        <button id="displayHelpText">Display help for Navi</button>
+        <button id="displayHelpImprint">Display help for Imprint</button>
         <button id="deactivateAll">Deactivate all Guides</button>
         <button id="activateAll">Activate all Guides</button>
     </div>

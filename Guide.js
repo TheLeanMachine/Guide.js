@@ -6,10 +6,10 @@
  * Licensed under the MIT license.
  */
 
+// TODO: [BUG] Adding a Guide multiple times adde multiple DOM nodes(!!!)
+// TODO: [BUG] what happens if an un-activaed Guide gets deaktivated?
 // TODO: [BUG] why does 'activateAll()' does not get calles when button clicked?
-// >>> TODO: [BUG] remove CSS-ID members from JQueryAdapter()
 // >>> TODO: [BUG] guidejs_test: a) why does null check fail? b) what kind of error is thrown if no guideConfig is provided?
-// >>> TODO: [BUG] When trying to close a HelpBoxGuide, ALL HelpBoxes are closed!
 // TODO: [TEST] activate() and deactivate() AND
 // TODO: [TEST] Module exporting, e.g. for require.js (???)
 // TODO: [FEATURE] Provide hooks (events) like 'guideRendered', 'guideHidden'
@@ -18,7 +18,7 @@
 // TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
 // TODO: [FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
 // >>> TODO: [REFACTOR] add Guide in DOM as child nodes(instead of sibling), make parent "position: relative;" and use this as starting point for rendering
-// TODO: [REFACTOR] Rename HelpBoxGuide to HelpBpx (???)
+// TODO: [REFACTOR] Rename HelpBoxGuide to HelpBox (???)
 // TODO: [REFACTOR] make use of renderAdapter()
 // TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
 // TODO: [VALIDATION] Args of createHelpBoxGuide() -> set to reasonable defaults otherwise
@@ -39,7 +39,8 @@
   //
   // other "constants"
   //
-  var debugModeEnabled = null;
+  var CACHED_DEBUG_ENABLED = null;
+  var DEBUG_URL_HASH = 'debugGuideJs';
 
   var RENDERER = null; // TODO add doc
 
@@ -99,6 +100,8 @@
    */
   function HelpBoxGuide(guideConfig) {
     var guideId = lastAddedGuideId++;
+    var helpBoxCssId = 'guideJsHelpBox-' + guideId;
+    var closeLinkCssId = 'guideJsHelpBoxCloseLink-' + guideId;
     var targetCssId = guideConfig.renderTarget;
 
     /**
@@ -110,12 +113,21 @@
       var fadeOutMillis = guideConfig.fadeOutMillis;
       var displayDuration = guideConfig.displayDuration;
 
-      renderer().renderHtmlTo(targetCssId, content, displayDuration, fadeOutMillis, guideId);
+
+      var anchor = debugEnabled() ? DEBUG_URL_HASH : 'top';
+      var html = '<div id="'+ helpBoxCssId +'" class="helpBox">' + content + '<br><a id="'+ closeLinkCssId +'" href="#'+ anchor +'">close</a></div>';
+      renderer().renderHtmlTo(html, targetCssId, helpBoxCssId, displayDuration, fadeOutMillis);
+
+      // TODO Refactor: make API jQuery independent
+      $('#' + closeLinkCssId).on('click', function(){
+        deactivate();
+      });
+      logDebug('Register close handler on "#' + closeLinkCssId + '"');
     }
 
     // TODO add doc
     function deactivate() {
-      renderer().hide(guideId); // naive implementation
+      renderer().hide(helpBoxCssId);
     }
 
     function isLoaded() {
@@ -129,36 +141,23 @@
 
   // TODO add doc (rename to wrapJQuery() )
   function JQueryRenderAdapter($) {
-    var helpBoxCssIdPrefix = 'guideJsHelpBox-';
-    var closeLinkCssIdPrefix = 'guideJsHelpBoxCloseLink-';
+
 
     // TODO add doc
-    function renderHtmlTo(renderTarget, content, displayDuration, fadeOutMillis, guideId) {
+    function renderHtmlTo(html, cssIdRenderTarget, cssIdGuideContainer, displayDuration, fadeOutMillis) {
       var helpBox;
 
-      $(renderTarget).prepend('<div id="'+ cssIdHelpBox(guideId) +'" class="helpBox">' + content + '<br><a id="'+ cssIdCloseLink(guideId) +'" href="">close</a></div>');
+      // TODO a) client should add plain CSS-ID b) write addHtmlAsChildOf() method
+      $('#' + cssIdRenderTarget).prepend(html);
       setTimeout(function() {
-        $('#' + cssIdHelpBox(guideId)).fadeOut(fadeOutMillis);
+        $('#' + cssIdGuideContainer).fadeOut(fadeOutMillis);
       }, displayDuration);
-      if (debugEnabled()) {
-        logDebug('Rendered Guide with CSS-ID "'+ cssIdHelpBox(guideId) +'"');
-      }
-
-      $('#' + cssIdCloseLink(guideId)).on('click', function(){
-        hide(guideId);
-      });
+      logDebug('Rendered Guide with CSS-ID "'+ cssIdGuideContainer +'" to element with CSS-ID "'+ cssIdRenderTarget +'"');
     }
 
-    function hide(guideId) {
-      $('#' + cssIdHelpBox(guideId)).hide();
-    }
-
-    function cssIdHelpBox(guideId) {
-      return helpBoxCssIdPrefix + guideId;
-    }
-
-    function cssIdCloseLink(guideId) {
-      return closeLinkCssIdPrefix + guideId;
+    function hide(cssIdGuideContainer) {
+      $('#' + cssIdGuideContainer).hide();
+logDebug("...in" + cssIdGuideContainer);
     }
 
     this.renderHtmlTo = renderHtmlTo;
@@ -205,14 +204,16 @@
    * @return TRUE, if debug mode is enabled
    */
   function debugEnabled() {
-    if (!debugModeEnabled) {
+    var debugAnchor = "#"+DEBUG_URL_HASH;
+
+    if (!CACHED_DEBUG_ENABLED) {
       if (GLOBAL_CONTEXT.location) {
-        debugModeEnabled = GLOBAL_CONTEXT.location.hash && ("#debugGuideJs" === GLOBAL_CONTEXT.location.hash);
+        CACHED_DEBUG_ENABLED = GLOBAL_CONTEXT.location.hash && (GLOBAL_CONTEXT.location.hash === debugAnchor);
       } else {
-        debugModeEnabled = false;
+        CACHED_DEBUG_ENABLED = false;
       }
     }
-    return debugModeEnabled;
+    return CACHED_DEBUG_ENABLED;
   }
 
   function forEachIn(array, fn) {
@@ -261,7 +262,9 @@
   }
 
   function logDebug(msg) {
-    log('[DEBUG]', msg);
+    if (debugEnabled()) {
+      log('[DEBUG]', msg);
+    }
   }
 
   function log(level, msg) {
