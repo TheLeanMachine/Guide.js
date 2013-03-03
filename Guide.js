@@ -17,7 +17,9 @@
 // TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
 // TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
 // TODO: [FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
-// >>> TODO: [REFACTOR] add Guide in DOM as child nodes(instead of sibling), make parent "position: relative;" and use this as starting point for rendering
+// TODO: [REFACTOR] initialize member 'debugEnabled' rather by using an immediate function that lazy loading
+// >>> TODO: [REFACTOR] renderHtmTo() [and subroutines!]: split in sub-modules etc. DomService(), EventService(), TaskService()
+// TODO: [REFACTOR] add Guide in DOM as child nodes(instead of sibling), make parent "position: relative;" and use this as starting point for rendering
 // TODO: [REFACTOR] Rename HelpBoxGuide to HelpBox (???)
 // TODO: [REFACTOR] make use of renderAdapter()
 // TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
@@ -25,32 +27,31 @@
 (function (undefined) { // we always get 'undefined' here, since this code is directly invoked without arguments
 
   //
-  // API "constants"
+  // "constants"
   //
-  var GLOBAL_CONTEXT = this; // 'window' in the browser, or 'global' on the server (see very bottom of this file)
-
-  var GUIDES = [];
-
-  var lastAddedGuideId = 0;
-
+  var RENDERER = null; // TODO add doc
+  var COMMONJS_AVAILABLE = (typeof module !== 'undefined' && module.exports); // checks for node.js, too
+  /*global ender:false */
+  var ENDER_AVAILABLE = typeof ender === 'undefined';
+  /*global define:false */
+  var REQUIREJS_AVAILABLE = (typeof define === "function") && define.amd;
   var DOC_URL = 'https://github.com/TheLeanMachine/Guide.js/blob/master/README.md';
 
 
   //
-  // other "constants"
+  // module global members
+  //
+  var GLOBAL_CONTEXT = this; // 'window' in the browser, or 'global' on the server (see very bottom of this file)
+  var GUIDES = []; // all Guides created by this lib
+  var lastAddedGuideId = 0; // incremented when Guide is created
+
+
+  //
+  // members initialized by immediate functions
   //
   var CACHED_DEBUG_ENABLED = null;
   var DEBUG_URL_HASH = 'debugGuideJs';
 
-  var RENDERER = null; // TODO add doc
-
-  var COMMONJS_AVAILABLE = (typeof module !== 'undefined' && module.exports); // checks for node.js, too
-
-  /*global ender:false */
-  var ENDER_AVAILABLE = typeof ender === 'undefined';
-
-  /*global define:false */
-  var REQUIREJS_AVAILABLE = (typeof define === "function") && define.amd;
 
   /**
    * Factory method for creating new {@link HelpBoxGuide} instances.
