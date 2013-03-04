@@ -39,6 +39,8 @@
   var DEBUG_URL_HASH = 'debugGuideJs';
   var DOC_URL = 'https://github.com/TheLeanMachine/Guide.js/blob/master/README.md';
 
+
+
   //
   // module global members
   //
@@ -80,6 +82,41 @@
   function registerGuide(helpBoxGuide) {
     _guides.push(helpBoxGuide);
   }
+
+  // TODO add doc(?)
+  function Timer(timerFunction) {
+    this.timerId = null;
+    this.timerFunction = timerFunction;
+
+    // TODO add doc1
+    function start() {
+      this.timerId = timerFunction();
+    }
+
+    function stop() {
+      // TODO clearTimer() clearInterval() ???
+    }
+  }
+
+  // TODO add doc
+  function TimerService() {
+    var timers = [];
+
+    function delayForAtLeast(delayMillis, fn) {
+      var timerFunction = function () {
+        return setTimeout(fn, delayMillis);
+      };
+      var timer = new Timer(timerFunction);
+      timer.start();
+      timers.push(timer);
+    }
+
+    function callEvery(intervalMillis, fn) {
+      // TODO ...
+      //timers.push(newTimer);
+    }
+  }
+
 
   /**
    * A simple help box that gets displayed for a certain amount of time.
@@ -214,6 +251,7 @@
   }
 
 
+
   //
   // Helper functions
   //
@@ -308,6 +346,7 @@
     this.activateAll = activateAll;
     this.deactivateAll = deactivateAll;
   }
+
 
 
   //

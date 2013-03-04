@@ -35,6 +35,8 @@
   var DEBUG_URL_HASH = 'debugGuideJs';
   var DOC_URL = 'https://github.com/TheLeanMachine/Guide.js/blob/master/README.md';
 
+
+
   //
   // module global members
   //
@@ -76,6 +78,41 @@
   function registerGuide(helpBoxGuide) {
     _guides.push(helpBoxGuide);
   }
+
+  // TODO add doc(?)
+  function Timer(timerFunction) {
+    this.timerId = null;
+    this.timerFunction = timerFunction;
+
+    // TODO add doc1
+    function start() {
+      this.timerId = timerFunction();
+    }
+
+    function stop() {
+      // TODO clearTimer() clearInterval() ???
+    }
+  }
+
+  // TODO add doc
+  function TimerService() {
+    var timers = [];
+
+    function delayForAtLeast(delayMillis, fn) {
+      var timerFunction = function () {
+        return setTimeout(fn, delayMillis);
+      };
+      var timer = new Timer(timerFunction);
+      timer.start();
+      timers.push(timer);
+    }
+
+    function callEvery(intervalMillis, fn) {
+      // TODO ...
+      //timers.push(newTimer);
+    }
+  }
+
 
   /**
    * A simple help box that gets displayed for a certain amount of time.
@@ -196,12 +233,13 @@
   // TODO doc
   function domService() {
     // TODO: use lib cache
-    if (_libCache['domService']) {
-      return _libCache['domService'];
+    var cacheKey = 'domService';
+    if (_libCache[cacheKey]) {
+      return _libCache[cacheKey];
     }
 
     if (jQueryAvailable()) {
-      return _libCache['domService'] = new JQueryDomService(GLOBAL_CONTEXT.jQuery);
+      return _libCache[cacheKey] = new JQueryDomService(GLOBAL_CONTEXT.jQuery);
     }
 
     logError('Cannot render any Guides: No appropriate lib found in global context.');
@@ -209,16 +247,21 @@
   }
 
 
+
   //
   // Helper functions
   //
 
   function debugModeEnabled() {
-    var anchor = '#' + DEBUG_URL_HASH;
-    if (GLOBAL_CONTEXT.location && GLOBAL_CONTEXT.location.hash) {
-      return GLOBAL_CONTEXT.location.hash === anchor;
+    var cacheKey = 'debugModeEnabled';
+    if (_libCache[cacheKey]) {
+      return _libCache[cacheKey];
     }
-    return false;
+    _libCache[cacheKey] = false;
+    if (GLOBAL_CONTEXT.location && GLOBAL_CONTEXT.location.hash) {
+      _libCache[cacheKey] = GLOBAL_CONTEXT.location.hash === ('#' + DEBUG_URL_HASH);
+    }
+    return _libCache[cacheKey];
   }
 
   function jQueryAvailable() {
@@ -299,6 +342,7 @@
     this.activateAll = activateAll;
     this.deactivateAll = deactivateAll;
   }
+
 
 
   //
