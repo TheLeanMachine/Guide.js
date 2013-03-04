@@ -1,4 +1,4 @@
-/*! Guide.js - v0.0.1 - 2013-03-04
+/*! Guide.js - v0.0.1 - 2013-03-05
 * https://github.com/TheLeanMachine/Guide.js
 * Copyright (c) 2013 Kai Hoelscher; Licensed MIT */
 
@@ -13,7 +13,7 @@
 // TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
 // TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
 // TODO: [FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
-// >>> TODO: [REFACTOR] renderHtmTo() [and subroutines!]: split in sub-modules etc. DomService(), EventService(), TaskService()
+// TODO: [REFACTOR] Rename: displayDuration -> displayDurationsMillis
 // TODO: [REFACTOR] add Guide in DOM as child nodes(instead of sibling), make parent "position: relative;" and use this as starting point for rendering
 // TODO: [REFACTOR] Rename HelpBoxGuide to HelpBox (???)
 // TODO: [REFACTOR] make use of renderAdapter()
@@ -38,12 +38,41 @@
 
 
   //
-  // module global members
+  // private members
   //
 
   var _guides = []; // all Guides created by this lib
   var _lastAddedGuideId = 0; // incremented when Guide is created
   var _libCache = {};
+
+
+
+  //
+  // private functions
+  //
+
+  // TODO add doc(?)
+  function registerGuide(helpBoxGuide) {
+    _guides.push(helpBoxGuide);
+  }
+
+  /**
+   * Deactivates all Guides (ATM this means to hide them).
+   */
+  function deactivateAll() {
+    forEachIn(_guides, function(guide) {
+      guide.deactivate();
+    });
+  }
+
+  /**
+   * Activates all Guides (ATM this means to display them, again).
+   */
+  function activateAll() {
+    forEachIn(_guides, function(guide) {
+      guide.activate();
+    });
+  }
 
 
   /**
@@ -73,44 +102,6 @@
       fadeOutMillis:(clientConfig.fadeOutMillis) ? clientConfig.displayDuration : defaultFadeOutMillis
     };
     return new HelpBoxGuide(validConfig);
-  }
-
-  function registerGuide(helpBoxGuide) {
-    _guides.push(helpBoxGuide);
-  }
-
-  // TODO add doc(?)
-  function Timer(timerFunction) {
-    this.timerId = null;
-    this.timerFunction = timerFunction;
-
-    // TODO add doc1
-    function start() {
-      this.timerId = timerFunction();
-    }
-
-    function stop() {
-      // TODO clearTimer() clearInterval() ???
-    }
-  }
-
-  // TODO add doc
-  function TimerService() {
-    var timers = [];
-
-    function delayForAtLeast(delayMillis, fn) {
-      var timerFunction = function () {
-        return setTimeout(fn, delayMillis);
-      };
-      var timer = new Timer(timerFunction);
-      timer.start();
-      timers.push(timer);
-    }
-
-    function callEvery(intervalMillis, fn) {
-      // TODO ...
-      //timers.push(newTimer);
-    }
   }
 
 
@@ -144,12 +135,7 @@
         logDebug('Rendered Guide with CSS-ID "'+ helpBoxCssId +'" to element with CSS-ID "'+ targetCssId +'"');
       }
 
-// TODO eventService().scheduleFor(delayMillis, fn)
-      setTimeout(function() {
-       // TODO parametrize hide?
-       // $('#' + helpBoxCssId).fadeOut(fadeOutMillis);
-       domService().hideGuide(helpBoxCssId);
-      }, displayDuration);
+      timerService().delayForAtLeast(displayDuration, deactivate);
 
 // TODO taskService / eventService ???
       domService().attachEventTo('click', closeLinkCssId, function() {
@@ -159,6 +145,7 @@
 
     // TODO add doc
     function deactivate() {
+// $('#' + helpBoxCssId).fadeOut(fadeOutMillis);
       domService().hideGuide(helpBoxCssId);
     }
 
@@ -169,6 +156,21 @@
     this.activate = activate;
     this.deactivate = deactivate;
     this.isLoaded = isLoaded;
+  }
+
+  // TODO doc
+  function domService() {
+    var cacheKey = 'domService';
+    if (_libCache[cacheKey]) {
+      return _libCache[cacheKey];
+    }
+
+    if (jQueryAvailable()) {
+      return _libCache[cacheKey] = new JQueryDomService(GLOBAL_CONTEXT.jQuery);
+    }
+
+    logError('Cannot render any Guides: No appropriate lib found in global context.');
+    return null;
   }
 
   // TODO add doc (rename to wrapJQuery() )
@@ -212,38 +214,53 @@
     this.domContainsGuide = domContainsGuide;
   }
 
-  /**
-   * Deactivates all Guides (ATM this means to hide them).
-   */
-  function deactivateAll() {
-    forEachIn(_guides, function(guide) {
-      guide.deactivate();
-    });
+  // TODO add doc
+  function timerService() {
+    var cacheKey = 'timerService';
+    return _libCache[cacheKey] ? _libCache[cacheKey] : (_libCache[cacheKey] = new DefaultTimerService());
   }
 
-  /**
-   * Activates all Guides (ATM this means to display them, again).
-   */
-  function activateAll() {
-    forEachIn(_guides, function(guide) {
-      guide.activate();
-    });
-  }
+  // TODO add doc
+  function DefaultTimerService() {
+    var timers = [];
 
-  // TODO doc
-  function domService() {
-    // TODO: use lib cache
-    var cacheKey = 'domService';
-    if (_libCache[cacheKey]) {
-      return _libCache[cacheKey];
+    function delayFor(delayMillis, fn) {
+      var timer = {
+        timerId: null,
+        start: function() {
+          this.timerId = setTimeout(fn, delayMillis);
+        },
+        stop: function() {
+          clearTimeout(this.timerId);
+        }
+      };
+      timer.start();
+      timers.push(timer);
     }
 
-    if (jQueryAvailable()) {
-      return _libCache[cacheKey] = new JQueryDomService(GLOBAL_CONTEXT.jQuery);
+    function callEvery(intervalMillis, fn) {
+      var timer = {
+        timerId: null,
+        start: function() {
+          this.timerId = setInterval(fn, intervalMillis);
+        },
+        stop: function() {
+          clearInterval(this.timerId);
+        }
+      };
+      timer.start();
+      timers.push(timer);
     }
 
-    logError('Cannot render any Guides: No appropriate lib found in global context.');
-    return null;
+    function stopAll() {
+      forEachIn(timers, function(timer) {
+        timer.stop();
+      });
+    }
+
+    this.delayFor = delayFor;
+    this.callEvery = callEvery;
+    this.stopAll = stopAll;
   }
 
 

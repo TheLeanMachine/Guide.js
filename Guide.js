@@ -42,13 +42,18 @@
 
 
   //
-  // module global members
+  // private members
   //
 
   var _guides = []; // all Guides created by this lib
   var _lastAddedGuideId = 0; // incremented when Guide is created
   var _libCache = {};
 
+
+
+  //
+  // private functions
+  //
 
   // TODO add doc(?)
   function registerGuide(helpBoxGuide) {
@@ -223,7 +228,7 @@
   function DefaultTimerService() {
     var timers = [];
 
-    function delayForAtLeast(delayMillis, fn) {
+    function delayFor(delayMillis, fn) {
       var timer = {
         timerId: null,
         start: function() {
@@ -240,8 +245,6 @@
     function callEvery(intervalMillis, fn) {
       var timer = {
         timerId: null,
-        startMillis: new Date().getMilliseconds(),
-        millisPassed: 0,
         start: function() {
           this.timerId = setInterval(fn, intervalMillis);
         },
@@ -259,7 +262,7 @@
       });
     }
 
-    this.delayForAtLeast = delayForAtLeast;
+    this.delayFor = delayFor;
     this.callEvery = callEvery;
     this.stopAll = stopAll;
   }
