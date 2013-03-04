@@ -7,6 +7,7 @@
  */
 
 // TODO: [BUG] what happens if an un-activaed Guide gets deaktivated?
+// >>> TODO: [BUG] re-implement fadeOut of GUide
 // TODO: [BUG] why does 'activateAll()' does not get calles when button clicked?
 // >>> TODO: [BUG] guidejs_test: a) why does null check fail? b) what kind of error is thrown if no guideConfig is provided?
 // TODO: [TEST] activate() and deactivate() AND
@@ -95,17 +96,29 @@
      * Triggers the Guide to do its work: Display a help box, start a tour with Guiders etc.
      */
     function activate() { // TODO rename to 'augment()' or sth. else?
-
       var content = guideConfig.text;
       var fadeOutMillis = guideConfig.fadeOutMillis;
       var displayDuration = guideConfig.displayDuration;
-
+      var html;
       var anchor = debugModeEnabled() ? DEBUG_URL_HASH : 'top';
 
-      var html = '<div id="'+ helpBoxCssId +'" class="helpBox">' + content + '<br><a id="'+ closeLinkCssId +'" href="#'+ anchor +'">close</a></div>';
-      domService().attachGuideTo(targetCssId, html, helpBoxCssId, displayDuration, fadeOutMillis);
+      if (domService().domContainsGuide(helpBoxCssId)) {
+        domService().showGuide(helpBoxCssId);
+        logDebug('Display Guide with CSS-ID "'+ helpBoxCssId +'" (rendered to element with CSS-ID "'+ targetCssId +')"');
+      } else {
+        html = '<div id="' + helpBoxCssId + '" class="helpBox">' + content + '<br><a id="' + closeLinkCssId + '" href="#' + anchor + '">close</a></div>';
+        domService().attachGuideTo(targetCssId, html, helpBoxCssId);
+        logDebug('Rendered Guide with CSS-ID "'+ helpBoxCssId +'" to element with CSS-ID "'+ targetCssId +'"');
+      }
 
-// taskService / eventService ???
+// TODO eventService().scheduleFor(delayMillis, fn)
+      setTimeout(function() {
+       // TODO parametrize hide?
+       // $('#' + helpBoxCssId).fadeOut(fadeOutMillis);
+       domService().hideGuide(helpBoxCssId);
+      }, displayDuration);
+
+// TODO taskService / eventService ???
       domService().attachEventTo('click', closeLinkCssId, function() {
         deactivate();
       });
@@ -113,7 +126,7 @@
 
     // TODO add doc
     function deactivate() {
-      domService().hide(helpBoxCssId);
+      domService().hideGuide(helpBoxCssId);
     }
 
     function isLoaded() {
@@ -130,21 +143,9 @@
     var renderedGuides = {};
 
     // TODO add doc
-    function attachGuideTo(cssIdRenderTarget, html, cssIdGuideContainer, displayDuration, fadeOutMillis) {
-      // TODO a) client should add plain CSS-ID b) write addHtmlAsChildOf() method
-      if (!domContainsGuide(cssIdGuideContainer)) {
-        $('#' + cssIdRenderTarget).prepend(html);
-        rememberGuide(cssIdGuideContainer);
-        logDebug('Rendered Guide with CSS-ID "'+ cssIdGuideContainer +'" to element with CSS-ID "'+ cssIdRenderTarget +'"');
-      } else {
-        $('#' + cssIdGuideContainer).show();
-        logDebug('Display Guide with CSS-ID "'+ cssIdGuideContainer +'" (rendered to element with CSS-ID "'+ cssIdRenderTarget +')"');
-      }
-
-// eventService().scheduleFor(delayMillis, fn)
-      setTimeout(function() {
-        $('#' + cssIdGuideContainer).fadeOut(fadeOutMillis);
-      }, displayDuration);
+    function attachGuideTo(cssIdRenderTarget, html, cssIdGuideContainer) {
+      $('#' + cssIdRenderTarget).prepend(html);
+      rememberGuide(cssIdGuideContainer);
     }
 
     // TODO add doc
@@ -157,8 +158,13 @@
       renderedGuides[guideCssId] = 'dummy'; // TODO sth. better that dummy value?
     }
 
-    function hide(cssIdGuideContainer) {
-      $('#' + cssIdGuideContainer).hide();
+    // TODO add doc
+    function showGuide(guideCssId) {
+      $('#' + guideCssId).show();
+    }
+
+    function hideGuide(guideCssId) {
+      $('#' + guideCssId).hide();
     }
 
     // TODO add doc
@@ -167,8 +173,10 @@
     }
 
     this.attachGuideTo = attachGuideTo;
-    this.hide = hide;
+    this.showGuide = showGuide;
+    this.hideGuide = hideGuide;
     this.attachEventTo = attachEventTo;
+    this.domContainsGuide = domContainsGuide;
   }
 
   /**
