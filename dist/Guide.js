@@ -1,8 +1,7 @@
-/*! Guide.js - v0.0.1 - 2013-03-03
+/*! Guide.js - v0.0.1 - 2013-03-04
 * https://github.com/TheLeanMachine/Guide.js
 * Copyright (c) 2013 Kai Hoelscher; Licensed MIT */
 
-// TODO: [BUG] Adding a Guide multiple times adde multiple DOM nodes(!!!)
 // TODO: [BUG] what happens if an un-activaed Guide gets deaktivated?
 // TODO: [BUG] why does 'activateAll()' does not get calles when button clicked?
 // >>> TODO: [BUG] guidejs_test: a) why does null check fail? b) what kind of error is thrown if no guideConfig is provided?
@@ -14,11 +13,11 @@
 // TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
 // TODO: [FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
 // >>> TODO: [REFACTOR] renderHtmTo() [and subroutines!]: split in sub-modules etc. DomService(), EventService(), TaskService()
-// TODO: [REFACTOR] Imporove performace of methods like debugEnabled() oder renderer()
 // TODO: [REFACTOR] add Guide in DOM as child nodes(instead of sibling), make parent "position: relative;" and use this as starting point for rendering
 // TODO: [REFACTOR] Rename HelpBoxGuide to HelpBox (???)
 // TODO: [REFACTOR] make use of renderAdapter()
 // TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
+// TODO: [REFACTOR] Improve performance of methods like debugEnabled() oder renderer() (???)
 // TODO: [VALIDATION] Args of createHelpBoxGuide() -> set to reasonable defaults otherwise
 (function (undefined) { // we always get 'undefined' here, since this code is directly invoked without arguments
 
@@ -27,14 +26,12 @@
   //
 
   var GLOBAL_CONTEXT = this; // 'window' in the browser, or 'global' on the server (see very bottom of this file)
-
-  var DEBUG_URL_HASH = 'debugGuideJs';
   var COMMONJS_AVAILABLE = (typeof module !== 'undefined' && module.exports); // checks for node.js, too
   /*global ender:false */
   var ENDER_AVAILABLE = typeof ender === 'undefined';
   /*global define:false */
   var REQUIREJS_AVAILABLE = (typeof define === "function") && define.amd;
-
+  var DEBUG_URL_HASH = 'debugGuideJs';
   var DOC_URL = 'https://github.com/TheLeanMachine/Guide.js/blob/master/README.md';
 
   //
@@ -43,6 +40,7 @@
 
   var _guides = []; // all Guides created by this lib
   var _lastAddedGuideId = 0; // incremented when Guide is created
+  var _libCache = {};
 
 
   /**
@@ -98,19 +96,20 @@
       var fadeOutMillis = guideConfig.fadeOutMillis;
       var displayDuration = guideConfig.displayDuration;
 
-
       var anchor = debugModeEnabled() ? DEBUG_URL_HASH : 'top';
-      var html = '<div id="'+ helpBoxCssId +'" class="helpBox">' + content + '<br><a id="'+ closeLinkCssId +'" href="#'+ anchor +'">close</a></div>';
-      renderer().renderHtmlTo(targetCssId, html, helpBoxCssId, displayDuration, fadeOutMillis);
 
-      renderer().attachEventTo('click', closeLinkCssId, function() {
+      var html = '<div id="'+ helpBoxCssId +'" class="helpBox">' + content + '<br><a id="'+ closeLinkCssId +'" href="#'+ anchor +'">close</a></div>';
+      domService().attachGuideTo(targetCssId, html, helpBoxCssId, displayDuration, fadeOutMillis);
+
+// taskService / eventService ???
+      domService().attachEventTo('click', closeLinkCssId, function() {
         deactivate();
       });
     }
 
     // TODO add doc
     function deactivate() {
-      renderer().hide(helpBoxCssId);
+      domService().hide(helpBoxCssId);
     }
 
     function isLoaded() {
@@ -123,19 +122,35 @@
   }
 
   // TODO add doc (rename to wrapJQuery() )
-  function JQueryRenderAdapter($) {
-    // TODO add doc
-    function renderHtmlTo(cssIdRenderTarget, html, cssIdGuideContainer, displayDuration, fadeOutMillis) {
-      var helpBox;
+  function JQueryDomService($) {
+    var renderedGuides = {};
 
-// domService().insertHtml(...)
+    // TODO add doc
+    function attachGuideTo(cssIdRenderTarget, html, cssIdGuideContainer, displayDuration, fadeOutMillis) {
       // TODO a) client should add plain CSS-ID b) write addHtmlAsChildOf() method
-      $('#' + cssIdRenderTarget).prepend(html);
+      if (!domContainsGuide(cssIdGuideContainer)) {
+        $('#' + cssIdRenderTarget).prepend(html);
+        rememberGuide(cssIdGuideContainer);
+        logDebug('Rendered Guide with CSS-ID "'+ cssIdGuideContainer +'" to element with CSS-ID "'+ cssIdRenderTarget +'"');
+      } else {
+        $('#' + cssIdGuideContainer).show();
+        logDebug('Display Guide with CSS-ID "'+ cssIdGuideContainer +'" (rendered to element with CSS-ID "'+ cssIdRenderTarget +')"');
+      }
+
 // eventService().scheduleFor(delayMillis, fn)
       setTimeout(function() {
         $('#' + cssIdGuideContainer).fadeOut(fadeOutMillis);
       }, displayDuration);
-      logDebug('Rendered Guide with CSS-ID "'+ cssIdGuideContainer +'" to element with CSS-ID "'+ cssIdRenderTarget +'"');
+    }
+
+    // TODO add doc
+    function domContainsGuide(guideCssId) {
+      return renderedGuides[guideCssId];
+    }
+
+    // TODO add doc
+    function rememberGuide(guideCssId) {
+      renderedGuides[guideCssId] = 'dummy'; // TODO sth. better that dummy value?
     }
 
     function hide(cssIdGuideContainer) {
@@ -147,7 +162,7 @@
       $('#' + cssIdGuideContainer).on(eventName, fn);
     }
 
-    this.renderHtmlTo = renderHtmlTo;
+    this.attachGuideTo = attachGuideTo;
     this.hide = hide;
     this.attachEventTo = attachEventTo;
   }
@@ -171,10 +186,16 @@
   }
 
   // TODO doc
-  function renderer() {
-    if (jQueryAvailable()) {
-      return new JQueryRenderAdapter(GLOBAL_CONTEXT.jQuery);
+  function domService() {
+    // TODO: use lib cache
+    if (_libCache['domService']) {
+      return _libCache['domService'];
     }
+
+    if (jQueryAvailable()) {
+      return _libCache['domService'] = new JQueryDomService(GLOBAL_CONTEXT.jQuery);
+    }
+
     logError('Cannot render any Guides: No appropriate lib found in global context.');
     return null;
   }

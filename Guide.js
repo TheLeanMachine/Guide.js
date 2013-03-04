@@ -101,17 +101,19 @@
       var displayDuration = guideConfig.displayDuration;
 
       var anchor = debugModeEnabled() ? DEBUG_URL_HASH : 'top';
-      var html = '<div id="'+ helpBoxCssId +'" class="helpBox">' + content + '<br><a id="'+ closeLinkCssId +'" href="#'+ anchor +'">close</a></div>';
-      renderService().renderGuideTo(targetCssId, html, helpBoxCssId, displayDuration, fadeOutMillis);
 
-      renderService().attachEventTo('click', closeLinkCssId, function() {
+      var html = '<div id="'+ helpBoxCssId +'" class="helpBox">' + content + '<br><a id="'+ closeLinkCssId +'" href="#'+ anchor +'">close</a></div>';
+      domService().attachGuideTo(targetCssId, html, helpBoxCssId, displayDuration, fadeOutMillis);
+
+// taskService / eventService ???
+      domService().attachEventTo('click', closeLinkCssId, function() {
         deactivate();
       });
     }
 
     // TODO add doc
     function deactivate() {
-      renderService().hide(helpBoxCssId);
+      domService().hide(helpBoxCssId);
     }
 
     function isLoaded() {
@@ -124,27 +126,35 @@
   }
 
   // TODO add doc (rename to wrapJQuery() )
-  function JQueryRenderService($) {
+  function JQueryDomService($) {
     var renderedGuides = {};
 
     // TODO add doc
-    function renderGuideTo(cssIdRenderTarget, html, cssIdGuideContainer, displayDuration, fadeOutMillis) {
-
-// domService().insertHtml(...)
+    function attachGuideTo(cssIdRenderTarget, html, cssIdGuideContainer, displayDuration, fadeOutMillis) {
       // TODO a) client should add plain CSS-ID b) write addHtmlAsChildOf() method
-      if (!renderedGuides[cssIdGuideContainer]) {
+      if (!domContainsGuide(cssIdGuideContainer)) {
         $('#' + cssIdRenderTarget).prepend(html);
-        renderedGuides[cssIdGuideContainer] = 'dummy';
+        rememberGuide(cssIdGuideContainer);
+        logDebug('Rendered Guide with CSS-ID "'+ cssIdGuideContainer +'" to element with CSS-ID "'+ cssIdRenderTarget +'"');
       } else {
         $('#' + cssIdGuideContainer).show();
+        logDebug('Display Guide with CSS-ID "'+ cssIdGuideContainer +'" (rendered to element with CSS-ID "'+ cssIdRenderTarget +')"');
       }
 
 // eventService().scheduleFor(delayMillis, fn)
       setTimeout(function() {
         $('#' + cssIdGuideContainer).fadeOut(fadeOutMillis);
       }, displayDuration);
+    }
 
-      logDebug('Rendered Guide with CSS-ID "'+ cssIdGuideContainer +'" to element with CSS-ID "'+ cssIdRenderTarget +'"');
+    // TODO add doc
+    function domContainsGuide(guideCssId) {
+      return renderedGuides[guideCssId];
+    }
+
+    // TODO add doc
+    function rememberGuide(guideCssId) {
+      renderedGuides[guideCssId] = 'dummy'; // TODO sth. better that dummy value?
     }
 
     function hide(cssIdGuideContainer) {
@@ -156,7 +166,7 @@
       $('#' + cssIdGuideContainer).on(eventName, fn);
     }
 
-    this.renderGuideTo = renderGuideTo;
+    this.attachGuideTo = attachGuideTo;
     this.hide = hide;
     this.attachEventTo = attachEventTo;
   }
@@ -180,14 +190,14 @@
   }
 
   // TODO doc
-  function renderService() {
+  function domService() {
     // TODO: use lib cache
-    if (_libCache['renderService']) {
-      return _libCache['renderService'];
+    if (_libCache['domService']) {
+      return _libCache['domService'];
     }
 
     if (jQueryAvailable()) {
-      return _libCache['renderService'] = new JQueryRenderService(GLOBAL_CONTEXT.jQuery);
+      return _libCache['domService'] = new JQueryDomService(GLOBAL_CONTEXT.jQuery);
     }
 
     logError('Cannot render any Guides: No appropriate lib found in global context.');
