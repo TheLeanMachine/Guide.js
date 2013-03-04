@@ -200,12 +200,13 @@
   // TODO doc
   function domService() {
     // TODO: use lib cache
-    if (_libCache['domService']) {
-      return _libCache['domService'];
+    var cacheKey = 'domService';
+    if (_libCache[cacheKey]) {
+      return _libCache[cacheKey];
     }
 
     if (jQueryAvailable()) {
-      return _libCache['domService'] = new JQueryDomService(GLOBAL_CONTEXT.jQuery);
+      return _libCache[cacheKey] = new JQueryDomService(GLOBAL_CONTEXT.jQuery);
     }
 
     logError('Cannot render any Guides: No appropriate lib found in global context.');
@@ -218,11 +219,15 @@
   //
 
   function debugModeEnabled() {
-    var anchor = '#' + DEBUG_URL_HASH;
-    if (GLOBAL_CONTEXT.location && GLOBAL_CONTEXT.location.hash) {
-      return GLOBAL_CONTEXT.location.hash === anchor;
+    var cacheKey = 'debugModeEnabled';
+    if (_libCache[cacheKey]) {
+      return _libCache[cacheKey];
     }
-    return false;
+    _libCache[cacheKey] = false;
+    if (GLOBAL_CONTEXT.location && GLOBAL_CONTEXT.location.hash) {
+      _libCache[cacheKey] = GLOBAL_CONTEXT.location.hash === ('#' + DEBUG_URL_HASH);
+    }
+    return _libCache[cacheKey];
   }
 
   function jQueryAvailable() {
