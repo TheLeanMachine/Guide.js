@@ -17,6 +17,9 @@
 // TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
 // TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
 // TODO: [FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
+// TODO: [REFACTOR] Use Array.prototype.slice() and co. instead of functions belonging to the object
+// TODO: [REFACTOR] use some memoization instead of calls to '_libCache[...]'
+// TODO: [REFACTOR] Instead of 'COMMONJS_AVAILABLE', use (caching?) accessor functions like 'jQueryAvailable()'
 // TODO: [REFACTOR] Rename: displayDuration -> displayDurationsMillis
 // TODO: [REFACTOR] add Guide in DOM as child nodes(instead of sibling), make parent "position: relative;" and use this as starting point for rendering
 // TODO: [REFACTOR] Rename HelpBoxGuide to HelpBox (???)
@@ -132,14 +135,13 @@
 
       if (domService().domContainsGuide(helpBoxCssId)) {
         domService().showGuide(helpBoxCssId);
-        logDebug('Display Guide with CSS-ID "'+ helpBoxCssId +'" (rendered to element with CSS-ID "'+ targetCssId +')"');
       } else {
         html = '<div id="' + helpBoxCssId + '" class="helpBox">' + content + '<br><a id="' + closeLinkCssId + '" href="#' + anchor + '">close</a></div>';
         domService().attachGuideTo(targetCssId, html, helpBoxCssId);
-        logDebug('Rendered Guide with CSS-ID "'+ helpBoxCssId +'" to element with CSS-ID "'+ targetCssId +'"');
+        logDebug('Attached Guide "#'+ helpBoxCssId +'" to DOM, as child of "#'+ targetCssId +'".');
       }
 
-      timerService().delayForAtLeast(displayDuration, deactivate);
+      timerService().delayFor(displayDuration, deactivate);
 
 // TODO taskService / eventService ???
       domService().attachEventTo('click', closeLinkCssId, function() {
@@ -232,10 +234,10 @@
       var timer = {
         timerId: null,
         start: function() {
-          this.timerId = setTimeout(fn, delayMillis);
+          this.timerId = windowObj().setTimeout(fn, delayMillis);
         },
         stop: function() {
-          clearTimeout(this.timerId);
+          windowObj().clearTimeout(this.timerId);
         }
       };
       timer.start();
@@ -246,10 +248,10 @@
       var timer = {
         timerId: null,
         start: function() {
-          this.timerId = setInterval(fn, intervalMillis);
+          this.timerId = windowObj().setInterval(fn, intervalMillis);
         },
         stop: function() {
-          clearInterval(this.timerId);
+          windowObj().clearInterval(this.timerId);
         }
       };
       timer.start();
@@ -279,8 +281,23 @@
       return _libCache[cacheKey];
     }
     _libCache[cacheKey] = false;
-    if (GLOBAL_CONTEXT.location && GLOBAL_CONTEXT.location.hash) {
-      _libCache[cacheKey] = GLOBAL_CONTEXT.location.hash === ('#' + DEBUG_URL_HASH);
+    if (windowObj().location && windowObj().location.hash) {
+      _libCache[cacheKey] = windowObj().location.hash === ('#' + DEBUG_URL_HASH);
+    }
+    return _libCache[cacheKey];
+  }
+
+  // TODO add doc
+  function windowObj() {
+    var cacheKey = 'windowObj';
+    if (_libCache[cacheKey]) {
+      return _libCache[cacheKey];
+    }
+
+    if (GLOBAL_CONTEXT.window) {
+      _libCache[cacheKey] = GLOBAL_CONTEXT.window;
+    } else {
+      logError('No "window" object available in global context.');
     }
     return _libCache[cacheKey];
   }

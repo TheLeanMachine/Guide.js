@@ -52,7 +52,7 @@ a.buttonLink {
     border-bottom: 2px solid #000;
 }
 
-a.buttonLink:hover {
+a.buttonLink:active {
     border-top: 2px solid #000;
     border-left: 2px solid #000;
     border-right: 2px solid #ddd;
