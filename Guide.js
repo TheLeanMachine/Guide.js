@@ -12,6 +12,7 @@
 // >>> TODO: [BUG] guidejs_test: a) why does null check fail? b) what kind of error is thrown if no guideConfig is provided?
 // TODO: [TEST] activate() and deactivate() AND
 // TODO: [TEST] Module exporting, e.g. for require.js (???)
+// TODO: [API] methods to clean up: destroyAll() -> detachListeners(), removeGuidesFromDom()
 // TODO: [FEATURE] Provide hooks (events) like 'guideRendered', 'guideHidden'
 // TODO: [FEATURE] Provide HTML template for Guide
 // TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
@@ -19,7 +20,6 @@
 // TODO: [FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
 // TODO: [REFACTOR] Use Array.prototype.slice() and co. instead of functions belonging to the object
 // TODO: [REFACTOR] use some memoization instead of calls to '_libCache[...]'
-// TODO: [REFACTOR] Instead of 'COMMONJS_AVAILABLE', use (caching?) accessor functions like 'jQueryAvailable()'
 // TODO: [REFACTOR] Rename: displayDuration -> displayDurationsMillis
 // TODO: [REFACTOR] add Guide in DOM as child nodes(instead of sibling), make parent "position: relative;" and use this as starting point for rendering
 // TODO: [REFACTOR] Rename HelpBoxGuide to HelpBox (???)
@@ -34,11 +34,6 @@
   //
 
   var GLOBAL_CONTEXT = this; // 'window' in the browser, or 'global' on the server (see very bottom of this file)
-  var COMMONJS_AVAILABLE = (typeof module !== 'undefined' && module.exports); // checks for node.js, too
-  /*global ender:false */
-  var ENDER_AVAILABLE = typeof ender === 'undefined';
-  /*global define:false */
-  var REQUIREJS_AVAILABLE = (typeof define === "function") && define.amd;
   var DEBUG_URL_HASH = 'debugGuideJs';
   var DOC_URL = 'https://github.com/TheLeanMachine/Guide.js/blob/master/README.md';
 
@@ -81,7 +76,6 @@
     });
   }
 
-
   /**
    * Factory method for creating new {@link HelpBoxGuide} instances.
    *
@@ -110,7 +104,6 @@
     };
     return new HelpBoxGuide(validConfig);
   }
-
 
   /**
    * A simple help box that gets displayed for a certain amount of time.
@@ -306,6 +299,20 @@
     return GLOBAL_CONTEXT.jQuery != null;
   }
 
+  function commonJsAvailable() {
+    return (typeof module !== 'undefined' && module.exports); // checks for node.js, too
+  }
+
+  function enderAvailable() {
+    /*global ender:false */
+    return typeof ender === 'undefined';
+  }
+
+  function requireJsAvailable() {
+    /*global define:false */
+    return (typeof define === "function") && define.amd;
+  }
+
   function forEachIn(array, fn) {
     var i;
 
@@ -387,15 +394,15 @@
   // Exporting Guide.js
   //
 
-  if (COMMONJS_AVAILABLE) {
+  if (commonJsAvailable()) {
     module.exports = new GuideJsApi();
   }
-  if (ENDER_AVAILABLE) {
+  if (enderAvailable()) {
     // add `guide` as a global object via a string identifier,
     // for Closure Compiler "advanced" mode
     GLOBAL_CONTEXT['GuideJs'] = new GuideJsApi();
   }
-  if (REQUIREJS_AVAILABLE) {
+  if (requireJsAvailable()) {
     /*global define:false */
     define([], function () {
       return new GuideJsApi();
