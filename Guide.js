@@ -7,25 +7,24 @@
  */
 
 // TODO: [BUG] Prevent XSS attacks (to for example the test of a guide)
-// TODO: [BUG] what happens if an un-activaed Guide gets deaktivated?
 // >>> TODO: [BUG] re-implement fadeOut of GUide
 // TODO: [BUG] why does 'activateAll()' does not get calles when button clicked?
 // >>> TODO: [BUG] guidejs_test: a) why does null check fail? b) what kind of error is thrown if no guideConfig is provided?
+// TODO: [RATED][BUG] what happens if an un-activaed Guide gets deaktivated?
 // TODO: [TEST] activate() and deactivate() AND
 // TODO: [TEST] Module exporting, e.g. for require.js (???)
 // TODO: [API] methods to clean up: destroyAll() -> detachListeners(), removeGuidesFromDom()
+// TODO: [RATED][FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders (rename: HelpBoxGuide() to 'Guider()'?)
 // TODO: [FEATURE] Move CSS styles to lib; pass CSS styles to guideConfig, otherwise renderer() draws a default theme
-// TODO: [FEATURE] Provide hooks (events) like 'guideRendered', 'guideHidden'
 // TODO: [FEATURE] Provide HTML template for Guide
 // TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
-// TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
-// TODO: [FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
+// TODO [RATED][FEATURE] Provide hooks (events) like 'guideRendered', 'guideHidden'
+// TODO: [RATED][FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
 // TODO: [REFACTOR] Use Array.prototype.slice() and co. instead of functions belonging to the object
 // TODO: [REFACTOR] use some memoization instead of calls to '_libCache[...]'(?)
 // TODO: [REFACTOR] Rename: displayDuration -> displayDurationsMillis
 // TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
 // TODO: [REFACTOR] add Guide in DOM as child nodes(instead of sibling), make parent "position: relative;" and use this as starting point for rendering
-// TODO: [REFACTOR] Rename HelpBoxGuide to HelpBox (???)
 // TODO: [REFACTOR] Improve performance of methods like debugEnabled() oder renderer() (???)
 // TODO: [VALIDATION] Args of createHelpBoxGuide() -> set to reasonable defaults otherwise
 (function (undefined) { // we always get 'undefined' here, since this code is directly invoked without arguments
