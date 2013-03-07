@@ -14,18 +14,18 @@
 // TODO: [TEST] activate() and deactivate() AND
 // TODO: [TEST] Module exporting, e.g. for require.js (???)
 // TODO: [API] methods to clean up: destroyAll() -> detachListeners(), removeGuidesFromDom()
+// TODO: [FEATURE] Move CSS styles to lib; pass CSS styles to guideConfig, otherwise renderer() draws a default theme
 // TODO: [FEATURE] Provide hooks (events) like 'guideRendered', 'guideHidden'
 // TODO: [FEATURE] Provide HTML template for Guide
 // TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
 // TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
 // TODO: [FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
 // TODO: [REFACTOR] Use Array.prototype.slice() and co. instead of functions belonging to the object
-// TODO: [REFACTOR] use some memoization instead of calls to '_libCache[...]'
+// TODO: [REFACTOR] use some memoization instead of calls to '_libCache[...]'(?)
 // TODO: [REFACTOR] Rename: displayDuration -> displayDurationsMillis
+// TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
 // TODO: [REFACTOR] add Guide in DOM as child nodes(instead of sibling), make parent "position: relative;" and use this as starting point for rendering
 // TODO: [REFACTOR] Rename HelpBoxGuide to HelpBox (???)
-// TODO: [REFACTOR] make use of renderAdapter()
-// TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
 // TODO: [REFACTOR] Improve performance of methods like debugEnabled() oder renderer() (???)
 // TODO: [VALIDATION] Args of createHelpBoxGuide() -> set to reasonable defaults otherwise
 (function (undefined) { // we always get 'undefined' here, since this code is directly invoked without arguments
