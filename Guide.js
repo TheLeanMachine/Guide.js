@@ -6,6 +6,7 @@
  * Licensed under the MIT license.
  */
 
+// TODO: [BUG] Prevent XSS attacks (to for example the test of a guide)
 // TODO: [BUG] what happens if an un-activaed Guide gets deaktivated?
 // >>> TODO: [BUG] re-implement fadeOut of GUide
 // TODO: [BUG] why does 'activateAll()' does not get calles when button clicked?
