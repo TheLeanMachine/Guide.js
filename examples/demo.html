@@ -11,7 +11,8 @@
     <script type="text/javascript">
         function createImprintHelpBoxGuideDefault(GuideJs) {
             var guideConfig = {
-                renderTarget:'liImprint'
+                renderTarget:'liImprint',
+                text:'<script>window.alert("asdf")<\/script>'
             };
             return GuideJs.createHelpBoxGuide(guideConfig);
         }

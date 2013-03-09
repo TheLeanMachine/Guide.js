@@ -6,8 +6,6 @@
  * Licensed under the MIT license.
  */
 
-// TODO: [BUG] Prevent XSS attacks (to for example the test of a guide)
-// >>> TODO: [BUG] re-implement fadeOut of GUide
 // TODO: [BUG] why does 'activateAll()' does not get calles when button clicked?
 // >>> TODO: [BUG] guidejs_test: a) why does null check fail? b) what kind of error is thrown if no guideConfig is provided?
 // TODO: [RATED][BUG] what happens if an un-activaed Guide gets deaktivated?
@@ -17,7 +15,7 @@
 // TODO: [RATED][FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders (rename: HelpBoxGuide() to 'Guider()'?)
 // TODO: [FEATURE] Move CSS styles to lib; pass CSS styles to guideConfig, otherwise renderer() draws a default theme
 // TODO: [FEATURE] Provide HTML template for Guide
-// TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
+// TODO: [FEATURE] Render parameters? (etc. where to render: Re-implement fadeOut? Position clockwise? Relative to center? )
 // TODO [RATED][FEATURE] Provide hooks (events) like 'guideRendered', 'guideHidden'
 // TODO: [RATED][FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
 // TODO: [REFACTOR] Use Array.prototype.slice() and co. instead of functions belonging to the object
@@ -98,7 +96,7 @@
     var defaultFadeOutMillis = 150;
     var validConfig = {
       renderTarget:clientConfig.renderTarget,
-      text:(clientConfig.text) ? clientConfig.text : defaultText,
+      text:(clientConfig.text) ? convertToHtml(clientConfig.text) : defaultText,
       displayDuration:(clientConfig.displayDuration) ? clientConfig.displayDuration : defaultDisplayDuration,
       fadeOutMillis:(clientConfig.fadeOutMillis) ? clientConfig.displayDuration : defaultFadeOutMillis
     };
@@ -267,6 +265,12 @@
   //
   // Helper functions
   //
+
+  function convertToHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+  }
 
   function debugModeEnabled() {
     var cacheKey = 'debugModeEnabled';

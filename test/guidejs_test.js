@@ -40,7 +40,7 @@ exports['GuideJs'] = {
       fadeOutMillis:400
     };
     var guide = GuideJs.createHelpBoxGuide(guideConfig);
-    test.ok(guide != null, failMsg);
+    test.ok(guide !== null, failMsg);
     test.done();
   }
 };

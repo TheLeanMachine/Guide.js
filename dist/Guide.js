@@ -1,23 +1,24 @@
-/*! Guide.js - v0.0.1 - 2013-03-05
+/*! Guide.js - v0.0.1 - 2013-03-09
 * https://github.com/TheLeanMachine/Guide.js
 * Copyright (c) 2013 Kai Hoelscher; Licensed MIT */
 
-// TODO: [BUG] what happens if an un-activaed Guide gets deaktivated?
-// >>> TODO: [BUG] re-implement fadeOut of GUide
 // TODO: [BUG] why does 'activateAll()' does not get calles when button clicked?
 // >>> TODO: [BUG] guidejs_test: a) why does null check fail? b) what kind of error is thrown if no guideConfig is provided?
+// TODO: [RATED][BUG] what happens if an un-activaed Guide gets deaktivated?
 // TODO: [TEST] activate() and deactivate() AND
 // TODO: [TEST] Module exporting, e.g. for require.js (???)
-// TODO: [FEATURE] Provide hooks (events) like 'guideRendered', 'guideHidden'
+// TODO: [API] methods to clean up: destroyAll() -> detachListeners(), removeGuidesFromDom()
+// TODO: [RATED][FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders (rename: HelpBoxGuide() to 'Guider()'?)
+// TODO: [FEATURE] Move CSS styles to lib; pass CSS styles to guideConfig, otherwise renderer() draws a default theme
 // TODO: [FEATURE] Provide HTML template for Guide
-// TODO: [FEATURE] Render parameters? (etc. where to render: Position clockwise? Relative to center?)
-// TODO: [FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders
-// TODO: [FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
+// TODO: [FEATURE] Render parameters? (etc. where to render: Re-implement fadeOut? Position clockwise? Relative to center? )
+// TODO [RATED][FEATURE] Provide hooks (events) like 'guideRendered', 'guideHidden'
+// TODO: [RATED][FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
+// TODO: [REFACTOR] Use Array.prototype.slice() and co. instead of functions belonging to the object
+// TODO: [REFACTOR] use some memoization instead of calls to '_libCache[...]'(?)
 // TODO: [REFACTOR] Rename: displayDuration -> displayDurationsMillis
-// TODO: [REFACTOR] add Guide in DOM as child nodes(instead of sibling), make parent "position: relative;" and use this as starting point for rendering
-// TODO: [REFACTOR] Rename HelpBoxGuide to HelpBox (???)
-// TODO: [REFACTOR] make use of renderAdapter()
 // TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
+// TODO: [REFACTOR] add Guide in DOM as child nodes(instead of sibling), make parent "position: relative;" and use this as starting point for rendering
 // TODO: [REFACTOR] Improve performance of methods like debugEnabled() oder renderer() (???)
 // TODO: [VALIDATION] Args of createHelpBoxGuide() -> set to reasonable defaults otherwise
 (function (undefined) { // we always get 'undefined' here, since this code is directly invoked without arguments
@@ -27,11 +28,6 @@
   //
 
   var GLOBAL_CONTEXT = this; // 'window' in the browser, or 'global' on the server (see very bottom of this file)
-  var COMMONJS_AVAILABLE = (typeof module !== 'undefined' && module.exports); // checks for node.js, too
-  /*global ender:false */
-  var ENDER_AVAILABLE = typeof ender === 'undefined';
-  /*global define:false */
-  var REQUIREJS_AVAILABLE = (typeof define === "function") && define.amd;
   var DEBUG_URL_HASH = 'debugGuideJs';
   var DOC_URL = 'https://github.com/TheLeanMachine/Guide.js/blob/master/README.md';
 
@@ -74,7 +70,6 @@
     });
   }
 
-
   /**
    * Factory method for creating new {@link HelpBoxGuide} instances.
    *
@@ -97,13 +92,12 @@
     var defaultFadeOutMillis = 150;
     var validConfig = {
       renderTarget:clientConfig.renderTarget,
-      text:(clientConfig.text) ? clientConfig.text : defaultText,
+      text:(clientConfig.text) ? convertToHtml(clientConfig.text) : defaultText,
       displayDuration:(clientConfig.displayDuration) ? clientConfig.displayDuration : defaultDisplayDuration,
       fadeOutMillis:(clientConfig.fadeOutMillis) ? clientConfig.displayDuration : defaultFadeOutMillis
     };
     return new HelpBoxGuide(validConfig);
   }
-
 
   /**
    * A simple help box that gets displayed for a certain amount of time.
@@ -128,14 +122,13 @@
 
       if (domService().domContainsGuide(helpBoxCssId)) {
         domService().showGuide(helpBoxCssId);
-        logDebug('Display Guide with CSS-ID "'+ helpBoxCssId +'" (rendered to element with CSS-ID "'+ targetCssId +')"');
       } else {
         html = '<div id="' + helpBoxCssId + '" class="helpBox">' + content + '<br><a id="' + closeLinkCssId + '" href="#' + anchor + '">close</a></div>';
         domService().attachGuideTo(targetCssId, html, helpBoxCssId);
-        logDebug('Rendered Guide with CSS-ID "'+ helpBoxCssId +'" to element with CSS-ID "'+ targetCssId +'"');
+        logDebug('Attached Guide "#'+ helpBoxCssId +'" to DOM, as child of "#'+ targetCssId +'".');
       }
 
-      timerService().delayForAtLeast(displayDuration, deactivate);
+      timerService().delayFor(displayDuration, deactivate);
 
 // TODO taskService / eventService ???
       domService().attachEventTo('click', closeLinkCssId, function() {
@@ -228,10 +221,10 @@
       var timer = {
         timerId: null,
         start: function() {
-          this.timerId = setTimeout(fn, delayMillis);
+          this.timerId = windowObj().setTimeout(fn, delayMillis);
         },
         stop: function() {
-          clearTimeout(this.timerId);
+          windowObj().clearTimeout(this.timerId);
         }
       };
       timer.start();
@@ -242,10 +235,10 @@
       var timer = {
         timerId: null,
         start: function() {
-          this.timerId = setInterval(fn, intervalMillis);
+          this.timerId = windowObj().setInterval(fn, intervalMillis);
         },
         stop: function() {
-          clearInterval(this.timerId);
+          windowObj().clearInterval(this.timerId);
         }
       };
       timer.start();
@@ -269,20 +262,55 @@
   // Helper functions
   //
 
+  function convertToHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+  }
+
   function debugModeEnabled() {
     var cacheKey = 'debugModeEnabled';
     if (_libCache[cacheKey]) {
       return _libCache[cacheKey];
     }
     _libCache[cacheKey] = false;
-    if (GLOBAL_CONTEXT.location && GLOBAL_CONTEXT.location.hash) {
-      _libCache[cacheKey] = GLOBAL_CONTEXT.location.hash === ('#' + DEBUG_URL_HASH);
+    if (windowObj().location && windowObj().location.hash) {
+      _libCache[cacheKey] = windowObj().location.hash === ('#' + DEBUG_URL_HASH);
+    }
+    return _libCache[cacheKey];
+  }
+
+  // TODO add doc
+  function windowObj() {
+    var cacheKey = 'windowObj';
+    if (_libCache[cacheKey]) {
+      return _libCache[cacheKey];
+    }
+
+    if (GLOBAL_CONTEXT.window) {
+      _libCache[cacheKey] = GLOBAL_CONTEXT.window;
+    } else {
+      logError('No "window" object available in global context.');
     }
     return _libCache[cacheKey];
   }
 
   function jQueryAvailable() {
     return GLOBAL_CONTEXT.jQuery != null;
+  }
+
+  function commonJsAvailable() {
+    return (typeof module !== 'undefined' && module.exports); // checks for node.js, too
+  }
+
+  function enderAvailable() {
+    /*global ender:false */
+    return typeof ender === 'undefined';
+  }
+
+  function requireJsAvailable() {
+    /*global define:false */
+    return (typeof define === "function") && define.amd;
   }
 
   function forEachIn(array, fn) {
@@ -366,15 +394,15 @@
   // Exporting Guide.js
   //
 
-  if (COMMONJS_AVAILABLE) {
+  if (commonJsAvailable()) {
     module.exports = new GuideJsApi();
   }
-  if (ENDER_AVAILABLE) {
+  if (enderAvailable()) {
     // add `guide` as a global object via a string identifier,
     // for Closure Compiler "advanced" mode
     GLOBAL_CONTEXT['GuideJs'] = new GuideJsApi();
   }
-  if (REQUIREJS_AVAILABLE) {
+  if (requireJsAvailable()) {
     /*global define:false */
     define([], function () {
       return new GuideJsApi();
