@@ -6,7 +6,6 @@
  * Licensed under the MIT license.
  */
 
-// TODO [BUG] why does 'activateAll()' does not get called when button clicked?
 // TODO [RATED][BUG] what happens if an un-activaed Guide gets deaktivated?
 // TODO [RATED][TEST] Guide creation (valid params?)
 // TODO [TEST] activate() and deactivate()
@@ -15,10 +14,10 @@
 // TODO [RATED][FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders (rename: HelpBoxGuide() to 'Guider()'?)
 // TODO [FEATURE] Move CSS styles to lib; pass CSS styles to guideConfig, otherwise renderer() draws a default theme
 // TODO [FEATURE] Provide HTML template for Guide
-// TODO [FEATURE] Render parameters? (etc. where to render: Re-implement fadeOut? Position clockwise? Relative to center? )
+// TODO >>> [FEATURE] Render parameters? (etc. where to render: Re-implement fadeOut? Position clockwise? Relative to center? )
 // TODO [RATED][FEATURE] Provide hooks (events) like 'guideRendered', 'guideHidden'
+// TODO [RATED][FEATURE] Add pause/All(), resume/All() methods for times? additional value?
 // TODO [RATED][FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
-// TODO [REFACTOR] Use Array.prototype.slice() and co. instead of functions belonging to the object
 // TODO [REFACTOR] use some memoization instead of calls to '_libCache[...]'(?)
 // TODO [REFACTOR] Rename: displayDuration -> displayDurationsMillis
 // TODO [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
@@ -53,7 +52,7 @@
 
   // TODO add doc(?)
   function registerGuide(helpBoxGuide) {
-    _guides.push(helpBoxGuide);
+    pushTo(_guides, helpBoxGuide);
   }
 
   /**
@@ -93,11 +92,11 @@
   function helpBoxFrom(clientConfig) {
     var defaults = {
       text: 'This is the default text of a HelpBoxGuide',
-      displayDuration: 1000,
+      displayDuration: 2000,
       fadeOutMillis: 250
     };
     var validConfig = addDefaultsTo(clientConfig, defaults);
-    
+
     return new HelpBoxGuide(validConfig);
   }
 
@@ -253,7 +252,7 @@
         }
       };
       timer.start();
-      timers.push(timer);
+      pushTo(timers, timer);
     }
 
     function callEvery(intervalMillis, fn) {
@@ -267,7 +266,7 @@
         }
       };
       timer.start();
-      timers.push(timer);
+      pushTo(timers, timer);
     }
 
     function stopAll() {
@@ -354,6 +353,11 @@
       }
     }
     return false;
+  }
+
+  // TODO rename this function?
+  function pushTo(array, elem) {
+    Array.prototype.push.call(array, elem);
   }
 
   function isObject(obj) {
