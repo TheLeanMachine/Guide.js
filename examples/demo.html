@@ -11,15 +11,15 @@
     <script type="text/javascript">
         function createImprintHelpBoxGuideDefault(GuideJs) {
             var guideConfig = {
-                renderTarget:'liImprint',
-                text:'<script>window.alert("asdf")<\/script>'
+                renderTarget:'liImprint' // mandatory!
+                // text:'<script>window.alert("asdf")<\/script>' <<< for XSS attack!
             };
             return GuideJs.createHelpBoxGuide(guideConfig);
         }
 
         function createNaviHelpBoxGuide(GuideJs) {
             var guideConfig = {
-                renderTarget:'mainNav',
+                renderTarget:'mainNav', // mandatory!
                 text:'No one stands longer than me!',
                 displayDuration:5000,
                 fadeOutMillis:400

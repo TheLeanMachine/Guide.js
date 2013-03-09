@@ -2,25 +2,25 @@
 * https://github.com/TheLeanMachine/Guide.js
 * Copyright (c) 2013 Kai Hoelscher; Licensed MIT */
 
-// TODO: [BUG] why does 'activateAll()' does not get calles when button clicked?
-// >>> TODO: [BUG] guidejs_test: a) why does null check fail? b) what kind of error is thrown if no guideConfig is provided?
-// TODO: [RATED][BUG] what happens if an un-activaed Guide gets deaktivated?
-// TODO: [TEST] activate() and deactivate() AND
-// TODO: [TEST] Module exporting, e.g. for require.js (???)
-// TODO: [API] methods to clean up: destroyAll() -> detachListeners(), removeGuidesFromDom()
-// TODO: [RATED][FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders (rename: HelpBoxGuide() to 'Guider()'?)
-// TODO: [FEATURE] Move CSS styles to lib; pass CSS styles to guideConfig, otherwise renderer() draws a default theme
-// TODO: [FEATURE] Provide HTML template for Guide
-// TODO: [FEATURE] Render parameters? (etc. where to render: Re-implement fadeOut? Position clockwise? Relative to center? )
+// TODO [BUG] why does 'activateAll()' does not get called when button clicked?
+// TODO [RATED][BUG] what happens if an un-activaed Guide gets deaktivated?
+// TODO [RATED][TEST] Guide creation (valid params?)
+// TODO [TEST] activate() and deactivate()
+// TODO [TEST] Module exporting, e.g. for require.js (???)
+// TODO [API] methods to clean up: destroyAll() -> detachListeners(), removeGuidesFromDom()
+// TODO [RATED][FEATURE] New Guide type: GuidedTour() ...at first, just a collection of Guiders (rename: HelpBoxGuide() to 'Guider()'?)
+// TODO [FEATURE] Move CSS styles to lib; pass CSS styles to guideConfig, otherwise renderer() draws a default theme
+// TODO [FEATURE] Provide HTML template for Guide
+// TODO [FEATURE] Render parameters? (etc. where to render: Re-implement fadeOut? Position clockwise? Relative to center? )
 // TODO [RATED][FEATURE] Provide hooks (events) like 'guideRendered', 'guideHidden'
-// TODO: [RATED][FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
-// TODO: [REFACTOR] Use Array.prototype.slice() and co. instead of functions belonging to the object
-// TODO: [REFACTOR] use some memoization instead of calls to '_libCache[...]'(?)
-// TODO: [REFACTOR] Rename: displayDuration -> displayDurationsMillis
-// TODO: [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
-// TODO: [REFACTOR] add Guide in DOM as child nodes(instead of sibling), make parent "position: relative;" and use this as starting point for rendering
-// TODO: [REFACTOR] Improve performance of methods like debugEnabled() oder renderer() (???)
-// TODO: [VALIDATION] Args of createHelpBoxGuide() -> set to reasonable defaults otherwise
+// TODO [RATED][FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
+// TODO [REFACTOR] Use Array.prototype.slice() and co. instead of functions belonging to the object
+// TODO [REFACTOR] use some memoization instead of calls to '_libCache[...]'(?)
+// TODO [REFACTOR] Rename: displayDuration -> displayDurationsMillis
+// TODO [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
+// TODO [REFACTOR] add Guide in DOM as child nodes(instead of sibling), make parent "position: relative;" and use this as starting point for rendering
+// TODO [REFACTOR] Improve performance of methods like debugEnabled() oder renderer() (???)
+// TODO [VALIDATION] Args of createHelpBoxGuide() -> set to reasonable defaults otherwise
 (function (undefined) { // we always get 'undefined' here, since this code is directly invoked without arguments
 
   //
@@ -87,16 +87,37 @@
   }
 
   function helpBoxFrom(clientConfig) {
-    var defaultText = 'This is the default text of a HelpBoxGuide';
-    var defaultDisplayDuration = 1000;
-    var defaultFadeOutMillis = 150;
-    var validConfig = {
-      renderTarget:clientConfig.renderTarget,
-      text:(clientConfig.text) ? convertToHtml(clientConfig.text) : defaultText,
-      displayDuration:(clientConfig.displayDuration) ? clientConfig.displayDuration : defaultDisplayDuration,
-      fadeOutMillis:(clientConfig.fadeOutMillis) ? clientConfig.displayDuration : defaultFadeOutMillis
+    var defaults = {
+      text: 'This is the default text of a HelpBoxGuide',
+      displayDuration: 1000,
+      fadeOutMillis: 250
     };
+    var validConfig = addDefaultsTo(clientConfig, defaults);
+    
     return new HelpBoxGuide(validConfig);
+  }
+
+  function addDefaultsTo(targetObj, defaults) {
+    defaults = defaults || {};
+    var key;
+    var defaultValue;
+    var propertyNotDefined;
+
+    for (key in defaults) {
+      if (targetObj[key]) {
+        continue;
+      } else {
+        if (defaults.hasOwnProperty(key)) {
+          defaultValue = defaults[key];
+          if (isString(defaultValue) && (key === 'text')) { // TODO "(key === 'text')" ...this ain't a good design, right?
+            defaultValue = convertToHtml(defaultValue);
+          }
+          targetObj[key] = defaultValue;
+        }
+      }
+
+    }
+    return targetObj;
   }
 
   /**
@@ -341,6 +362,10 @@
 
   function isFunction(fn) {
     return Object.prototype.toString.call(fn) === '[object Function]';
+  }
+
+  function isString(fn) {
+    return Object.prototype.toString.call(fn) === '[object String]';
   }
 
   // TODO add isString(str)
