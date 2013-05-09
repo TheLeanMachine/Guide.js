@@ -133,13 +133,14 @@
     var helpBoxCssId = 'guideJsHelpBox-' + guideId;
     var closeLinkCssId = 'guideJsHelpBoxCloseLink-' + guideId;
     var targetCssId = guideConfig.renderTarget;
+    var fadeOutMillis = guideConfig.fadeOutMillis;
 
     /**
      * Triggers the Guide to do its work: Display a help box, start a tour with Guiders etc.
      */
     function activate() { // TODO rename to 'augment()' or sth. else?
       var content = guideConfig.text;
-      var fadeOutMillis = guideConfig.fadeOutMillis;
+
       var displayDuration = guideConfig.displayDuration;
       var html;
       var anchor = debugModeEnabled() ? DEBUG_URL_HASH : 'top';
@@ -168,8 +169,11 @@
 
     // TODO add doc
     function deactivate() {
-// $('#' + helpBoxCssId).fadeOut(fadeOutMillis);
-      domService().hideGuide(helpBoxCssId);
+      if (!!fadeOutMillis) {
+        domService().fadeOutGuide(helpBoxCssId, fadeOutMillis);
+      } else {
+        domService().hideGuide(helpBoxCssId);
+      }
     }
 
     function isLoaded() {
@@ -226,6 +230,10 @@
       $('#' + guideCssId).hide();
     }
 
+    function fadeOutGuide(guideCssId, fadeOutMillis) {
+      $('#' + guideCssId).fadeOut(fadeOutMillis);
+    }
+
     // TODO add doc
     function attachEventTo(eventName, cssIdGuideContainer, fn) {
       $('#' + cssIdGuideContainer).on(eventName, fn);
@@ -234,6 +242,7 @@
     this.attachGuideTo = attachGuideTo;
     this.showGuide = showGuide;
     this.hideGuide = hideGuide;
+    this.fadeOutGuide = fadeOutGuide;
     this.attachEventTo = attachEventTo;
     this.domContainsGuide = domContainsGuide;
   }
