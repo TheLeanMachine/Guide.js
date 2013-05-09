@@ -22,8 +22,8 @@
     var guideConfig = {
       renderTarget:'aboutUs', // mandatory!
       text:"It's all about us, whooo-hoooo!",
-      displayDuration:3000,
-      fadeOutMillis:200
+      displayDuration:5000,
+      fadeOutMillis:800
     };
     return GuideJs.createHelpBoxGuide(guideConfig);
   }
@@ -55,7 +55,10 @@
       $('#displayHelpImprint').on('click', imprintHelpBoxGuide.activate);
 
       //
+      // Guider automatically displayed on page rendering
+      //
       var aboutUsHelpBoxGuide = createAboutUsHelpBoxGuide(GuideJs)
+      aboutUsHelpBoxGuide.activate();
     });
   }
 
