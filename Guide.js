@@ -355,7 +355,7 @@
     return false;
   }
 
-  // TODO rename this function?
+  // TODO remname? maybe prefix for delegations to prototype methods (e.g. 'protoPush' in this case)?
   function pushTo(array, elem) {
     Array.prototype.push.call(array, elem);
   }

@@ -17,6 +17,16 @@
             return GuideJs.createHelpBoxGuide(guideConfig);
         }
 
+        function createAboutUsHelpBoxGuide(GuideJs) {
+          var guideConfig = {
+            renderTarget:'aboutUs', // mandatory!
+            text:"It's all about us, whooo-hoooo!",
+            displayDuration:3000,
+            fadeOutMillis:200
+          };
+          return GuideJs.createHelpBoxGuide(guideConfig);
+        }
+
         function createNaviHelpBoxGuide(GuideJs) {
             var guideConfig = {
                 renderTarget:'mainNav', // mandatory!
@@ -29,14 +39,22 @@
 
         function initApp() {
             require(['../Guide.js'], function(GuideJs) {
+                //
+                // Add global Guide control
+                //
+                $('#deactivateAll').on('click', GuideJs.deactivateAll);
+                $('#activateAll').on('click', GuideJs.activateAll);
+
+                //
+                // Guiders, rendered due to user interaction
+                //
                 var naviHelpBoxGuide =  createNaviHelpBoxGuide(GuideJs);
                 var imprintHelpBoxGuide =  createImprintHelpBoxGuideDefault(GuideJs);
-
                 $('#displayHelpText').on('click', naviHelpBoxGuide.activate);
                 $('#displayHelpImprint').on('click', imprintHelpBoxGuide.activate);
 
-                $('#deactivateAll').on('click', GuideJs.deactivateAll);
-                $('#activateAll').on('click', GuideJs.activateAll);
+                // 
+                var aboutUsHelpBoxGuide =  createAboutUsHelpBoxGuide(GuideJs)
             });
         }
 
@@ -58,7 +76,7 @@
         <ul id="mainNav">
             <li>Home</li>
             <li>Products</li>
-            <li>About us</li>
+            <li id="aboutUs">About us</li>
             <li id="liImprint">Imprint</li>
         </ul>
     </div>
