@@ -160,6 +160,12 @@
       });
     }
 
+    // TODO input validation
+    // TODO refactor: right place for this method?
+    function activateAfter(millis) {
+      timerService().delayFor(millis, this.activate);
+    }
+
     // TODO add doc
     function deactivate() {
 // $('#' + helpBoxCssId).fadeOut(fadeOutMillis);
@@ -171,6 +177,7 @@
     }
 
     this.activate = activate;
+    this.activateAfter = activateAfter;
     this.deactivate = deactivate;
     this.isLoaded = isLoaded;
   }

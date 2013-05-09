@@ -1,4 +1,4 @@
-/*! Guide.js - v0.0.1 - 2013-03-09
+/*! Guide.js - v0.0.1 - 2013-05-09
 * https://github.com/TheLeanMachine/Guide.js
 * Copyright (c) 2013 Kai Hoelscher; Licensed MIT */
 
@@ -14,7 +14,6 @@
 // TODO [RATED][FEATURE] Provide hooks (events) like 'guideRendered', 'guideHidden'
 // TODO [RATED][FEATURE] Add pause/All(), resume/All() methods for times? additional value?
 // TODO [RATED][FEATURE] Implement DefaultRenderAdapter that natively renders the helpbox (via HTML API?) ????
-// TODO >>> [REFACTOR] Use Array.prototype.slice() and co. instead of functions belonging to the object
 // TODO [REFACTOR] use some memoization instead of calls to '_libCache[...]'(?)
 // TODO [REFACTOR] Rename: displayDuration -> displayDurationsMillis
 // TODO [REFACTOR] expose concrete 'classes' instead of generic 'newGuide()' method: HelpBox, GuidedTour,...
@@ -157,6 +156,12 @@
       });
     }
 
+    // TODO input validation
+    // TODO refactor: right place for this method?
+    function activateAfter(millis) {
+      timerService().delayFor(millis, this.activate);
+    }
+
     // TODO add doc
     function deactivate() {
 // $('#' + helpBoxCssId).fadeOut(fadeOutMillis);
@@ -168,6 +173,7 @@
     }
 
     this.activate = activate;
+    this.activateAfter = activateAfter;
     this.deactivate = deactivate;
     this.isLoaded = isLoaded;
   }
@@ -352,7 +358,7 @@
     return false;
   }
 
-  // TODO rename this function?
+  // TODO remname? maybe prefix for delegations to prototype methods (e.g. 'protoPush' in this case)?
   function pushTo(array, elem) {
     Array.prototype.push.call(array, elem);
   }
