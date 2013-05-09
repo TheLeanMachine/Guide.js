@@ -444,7 +444,8 @@
   }
   if (requireJsAvailable()) {
     /*global define:false */
-    define([], function () {
+    var dependencies = []; // paths to local JS libs we depend on
+    define(dependencies, function () { // add a parameter for each path in 'dependencies' (while keeping the order!)
       return new GuideJsApi();
     });
   }
