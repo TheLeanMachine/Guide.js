@@ -1,85 +1,86 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Guide visitors through your website with Guide.js</title>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" type="text/css" href="demo.css" />
-    </head>
+<head>
+  <title>Guide visitors through your website with Guide.js</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="demo.css"/>
+</head>
 <body>
-    <script type="text/javascript" src="../lib/jquery-1.9.1.min.js"></script><!-- TODO: Load jQuery via require.js, too. -->
-    <script type="text/javascript" src="../lib/require-2.1.4.js"></script>
-    <script type="text/javascript">
-        function createImprintHelpBoxGuideDefault(GuideJs) {
-            var guideConfig = {
-                renderTarget:'liImprint' // mandatory!
-                // text:'<script>window.alert("asdf")<\/script>' <<< for XSS attack!
-            };
-            return GuideJs.createHelpBoxGuide(guideConfig);
-        }
+<script type="text/javascript" src="../lib/jquery-1.9.1.min.js"></script>
+<!-- TODO: Load jQuery via require.js, too. -->
+<script type="text/javascript" src="../lib/require-2.1.4.js"></script>
+<script type="text/javascript">
+  function createImprintHelpBoxGuideDefault(GuideJs) {
+    var guideConfig = {
+      renderTarget:'liImprint' // mandatory!
+      // text:'<script>window.alert("asdf")<\/script>' <<< for XSS attack!
+    };
+    return GuideJs.createHelpBoxGuide(guideConfig);
+  }
 
-        function createAboutUsHelpBoxGuide(GuideJs) {
-          var guideConfig = {
-            renderTarget:'aboutUs', // mandatory!
-            text:"It's all about us, whooo-hoooo!",
-            displayDuration:3000,
-            fadeOutMillis:200
-          };
-          return GuideJs.createHelpBoxGuide(guideConfig);
-        }
+  function createAboutUsHelpBoxGuide(GuideJs) {
+    var guideConfig = {
+      renderTarget:'aboutUs', // mandatory!
+      text:"It's all about us, whooo-hoooo!",
+      displayDuration:3000,
+      fadeOutMillis:200
+    };
+    return GuideJs.createHelpBoxGuide(guideConfig);
+  }
 
-        function createNaviHelpBoxGuide(GuideJs) {
-            var guideConfig = {
-                renderTarget:'mainNav', // mandatory!
-                text:'No one stands longer than me!',
-                displayDuration:5000,
-                fadeOutMillis:400
-            };
-            return GuideJs.createHelpBoxGuide(guideConfig);
-        }
+  function createNaviHelpBoxGuide(GuideJs) {
+    var guideConfig = {
+      renderTarget:'mainNav', // mandatory!
+      text:'No one stands longer than me!',
+      displayDuration:5000,
+      fadeOutMillis:400
+    };
+    return GuideJs.createHelpBoxGuide(guideConfig);
+  }
 
-        function initApp() {
-            require(['../Guide.js'], function(GuideJs) {
-                //
-                // Add global Guide control
-                //
-                $('#deactivateAll').on('click', GuideJs.deactivateAll);
-                $('#activateAll').on('click', GuideJs.activateAll);
+  function initApp() {
+    require(['../Guide.js'], function (GuideJs) {
+      //
+      // Add global Guide control
+      //
+      $('#deactivateAll').on('click', GuideJs.deactivateAll);
+      $('#activateAll').on('click', GuideJs.activateAll);
 
-                //
-                // Guiders, rendered due to user interaction
-                //
-                var naviHelpBoxGuide =  createNaviHelpBoxGuide(GuideJs);
-                var imprintHelpBoxGuide =  createImprintHelpBoxGuideDefault(GuideJs);
-                $('#displayHelpText').on('click', naviHelpBoxGuide.activate);
-                $('#displayHelpImprint').on('click', imprintHelpBoxGuide.activate);
+      //
+      // Guiders, rendered due to user interaction
+      //
+      var naviHelpBoxGuide = createNaviHelpBoxGuide(GuideJs);
+      var imprintHelpBoxGuide = createImprintHelpBoxGuideDefault(GuideJs);
+      $('#displayHelpText').on('click', naviHelpBoxGuide.activate);
+      $('#displayHelpImprint').on('click', imprintHelpBoxGuide.activate);
 
-                // 
-                var aboutUsHelpBoxGuide =  createAboutUsHelpBoxGuide(GuideJs)
-            });
-        }
+      //
+      var aboutUsHelpBoxGuide = createAboutUsHelpBoxGuide(GuideJs)
+    });
+  }
 
-        $(document).ready(initApp);
-    </script>
+  $(document).ready(initApp);
+</script>
 
-    <a href="#debugGuideJs" id="debugModeSwitch" class="buttonLink">Enable debugging</a>
+<a href="#debugGuideJs" id="debugModeSwitch" class="buttonLink">Enable debugging</a>
 
-    <div name="debugGuideJs"><!-- Jump to page top, when debuggin is enabled. -->
+<div name="debugGuideJs"><!-- Jump to page top, when debuggin is enabled. -->
 
-        <button id="displayHelpText">Display help for Navi</button>
-        <button id="displayHelpImprint">Display help for Imprint</button>
-        <button id="deactivateAll">Deactivate all Guides</button>
-        <button id="activateAll">Activate all Guides</button>
-    </div>
+  <button id="displayHelpText">Display help for Navi</button>
+  <button id="displayHelpImprint">Display help for Imprint</button>
+  <button id="deactivateAll">Deactivate all Guides</button>
+  <button id="activateAll">Activate all Guides</button>
+</div>
 
 
-    <div id="page">
-        <ul id="mainNav">
-            <li>Home</li>
-            <li>Products</li>
-            <li id="aboutUs">About us</li>
-            <li id="liImprint">Imprint</li>
-        </ul>
-    </div>
+<div id="page">
+  <ul id="mainNav">
+    <li>Home</li>
+    <li>Products</li>
+    <li id="aboutUs">About us</li>
+    <li id="liImprint">Imprint</li>
+  </ul>
+</div>
 
-    </body>
+</body>
 </html>
